@@ -1,1 +1,441 @@
 @import "tailwindcss";
+
+/* =========================================================================
+   Theme System — 14 themes (8 dark + 6 light)
+   Ported from FitBark V5 Debug Terminal design system
+   ========================================================================= */
+
+/* Shared tokens */
+:root {
+  --card-radius: 14px;
+  --font-display: 'Bricolage Grotesque', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+
+  /* FitBark Dark (default theme) */
+  --bg-primary: #111a27;
+  --bg-secondary: #1a2535;
+  --bg-tertiary: #212e40;
+  --bg-elevated: #243348;
+  --text-primary: #eaf0f6;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --border: #2d3d52;
+  --border-subtle: #232f40;
+  --accent: #2eccc0;
+  --accent-hover: #26b5aa;
+  --accent-strong: #3ee0d4;
+  --accent-dim: rgba(46, 204, 192, 0.15);
+  --accent-border: rgba(46, 204, 192, 0.25);
+  --accent-bg: rgba(46, 204, 192, 0.10);
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --purple: #8b5cf6;
+  --cyan: #06b6d4;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.35), inset 0 1px 0 rgba(46,204,192,0.04);
+  --table-hover: rgba(46, 204, 192, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(46, 204, 192, 0.18);
+}
+
+/* ---------- Light (FitBark) ---------- */
+[data-theme="light"] {
+  --bg-primary: #F8F7F5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #F0EEE9;
+  --bg-elevated: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #5C524B;
+  --text-tertiary: #A69C8E;
+  --border: #E2DED6;
+  --border-subtle: #F0EEE9;
+  --accent: #2eccc0;
+  --accent-hover: #26b5aa;
+  --accent-strong: #1a8f86;
+  --accent-dim: rgba(46, 204, 192, 0.10);
+  --accent-border: rgba(46, 204, 192, 0.20);
+  --accent-bg: rgba(46, 204, 192, 0.08);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --table-hover: rgba(46, 204, 192, 0.07);
+  --pill-bg: #E8E4DC;
+  --pill-active-bg: rgba(46, 204, 192, 0.15);
+}
+
+/* ---------- Monokai ---------- */
+[data-theme="monokai"] {
+  --bg-primary: #272822;
+  --bg-secondary: #2d2e27;
+  --bg-tertiary: #3e3d32;
+  --bg-elevated: #49483e;
+  --text-primary: #f8f8f2;
+  --text-secondary: #a6a886;
+  --text-tertiary: #75715e;
+  --border: #49483e;
+  --border-subtle: #3e3d32;
+  --accent: #a6e22e;
+  --accent-hover: #b6f23e;
+  --accent-strong: #c6ff50;
+  --accent-dim: rgba(166, 226, 46, 0.15);
+  --accent-border: rgba(166, 226, 46, 0.25);
+  --accent-bg: rgba(166, 226, 46, 0.08);
+  --success: #a6e22e;
+  --warning: #e6db74;
+  --danger: #f92672;
+  --info: #66d9ef;
+  --purple: #ae81ff;
+  --cyan: #66d9ef;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(166,226,46,0.04);
+  --table-hover: rgba(166, 226, 46, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(166, 226, 46, 0.18);
+}
+
+/* ---------- Dracula ---------- */
+[data-theme="dracula"] {
+  --bg-primary: #282a36;
+  --bg-secondary: #2d2f3d;
+  --bg-tertiary: #343746;
+  --bg-elevated: #3c3f58;
+  --text-primary: #f8f8f2;
+  --text-secondary: #bfbfbf;
+  --text-tertiary: #6272a4;
+  --border: #44475a;
+  --border-subtle: #383a4c;
+  --accent: #bd93f9;
+  --accent-hover: #caa4ff;
+  --accent-strong: #d4b0ff;
+  --accent-dim: rgba(189, 147, 249, 0.15);
+  --accent-border: rgba(189, 147, 249, 0.25);
+  --accent-bg: rgba(189, 147, 249, 0.08);
+  --success: #50fa7b;
+  --warning: #f1fa8c;
+  --danger: #ff5555;
+  --info: #8be9fd;
+  --purple: #bd93f9;
+  --cyan: #8be9fd;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(189,147,249,0.04);
+  --table-hover: rgba(189, 147, 249, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(189, 147, 249, 0.18);
+}
+
+/* ---------- Nord ---------- */
+[data-theme="nord"] {
+  --bg-primary: #2e3440;
+  --bg-secondary: #3b4252;
+  --bg-tertiary: #434c5e;
+  --bg-elevated: #4c566a;
+  --text-primary: #eceff4;
+  --text-secondary: #d8dee9;
+  --text-tertiary: #7b88a1;
+  --border: #4c566a;
+  --border-subtle: #3b4252;
+  --accent: #88c0d0;
+  --accent-hover: #8fbcbb;
+  --accent-strong: #a3d4e0;
+  --accent-dim: rgba(136, 192, 208, 0.15);
+  --accent-border: rgba(136, 192, 208, 0.25);
+  --accent-bg: rgba(136, 192, 208, 0.08);
+  --success: #a3be8c;
+  --warning: #ebcb8b;
+  --danger: #bf616a;
+  --info: #81a1c1;
+  --purple: #b48ead;
+  --cyan: #88c0d0;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(136,192,208,0.04);
+  --table-hover: rgba(136, 192, 208, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(136, 192, 208, 0.18);
+}
+
+/* ---------- Solarized Dark ---------- */
+[data-theme="solarized"] {
+  --bg-primary: #002b36;
+  --bg-secondary: #073642;
+  --bg-tertiary: #0a4050;
+  --bg-elevated: #0d4f5e;
+  --text-primary: #fdf6e3;
+  --text-secondary: #93a1a1;
+  --text-tertiary: #657b83;
+  --border: #2a5c68;
+  --border-subtle: #0a4050;
+  --accent: #b58900;
+  --accent-hover: #cb9a00;
+  --accent-strong: #daa520;
+  --accent-dim: rgba(181, 137, 0, 0.15);
+  --accent-border: rgba(181, 137, 0, 0.25);
+  --accent-bg: rgba(181, 137, 0, 0.08);
+  --success: #859900;
+  --warning: #b58900;
+  --danger: #dc322f;
+  --info: #268bd2;
+  --purple: #6c71c4;
+  --cyan: #2aa198;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(181,137,0,0.04);
+  --table-hover: rgba(181, 137, 0, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(181, 137, 0, 0.18);
+}
+
+/* ---------- One Dark (Atom) ---------- */
+[data-theme="onedark"] {
+  --bg-primary: #282c34;
+  --bg-secondary: #2c313a;
+  --bg-tertiary: #353b45;
+  --bg-elevated: #3e4452;
+  --text-primary: #abb2bf;
+  --text-secondary: #828997;
+  --text-tertiary: #5c6370;
+  --border: #3e4452;
+  --border-subtle: #353b45;
+  --accent: #61afef;
+  --accent-hover: #74baff;
+  --accent-strong: #8dcaff;
+  --accent-dim: rgba(97, 175, 239, 0.15);
+  --accent-border: rgba(97, 175, 239, 0.25);
+  --accent-bg: rgba(97, 175, 239, 0.08);
+  --success: #98c379;
+  --warning: #e5c07b;
+  --danger: #e06c75;
+  --info: #61afef;
+  --purple: #c678dd;
+  --cyan: #56b6c2;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.35), inset 0 1px 0 rgba(97,175,239,0.04);
+  --table-hover: rgba(97, 175, 239, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(97, 175, 239, 0.18);
+}
+
+/* ---------- GitHub Dark ---------- */
+[data-theme="github"] {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --bg-elevated: #30363d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-tertiary: #6e7681;
+  --border: #30363d;
+  --border-subtle: #21262d;
+  --accent: #58a6ff;
+  --accent-hover: #79c0ff;
+  --accent-strong: #a5d6ff;
+  --accent-dim: rgba(88, 166, 255, 0.15);
+  --accent-border: rgba(88, 166, 255, 0.25);
+  --accent-bg: rgba(88, 166, 255, 0.08);
+  --success: #3fb950;
+  --warning: #d29922;
+  --danger: #f85149;
+  --info: #58a6ff;
+  --purple: #bc8cff;
+  --cyan: #39d353;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(88,166,255,0.04);
+  --table-hover: rgba(88, 166, 255, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(88, 166, 255, 0.18);
+}
+
+/* ---------- Catppuccin Mocha ---------- */
+[data-theme="catppuccin"] {
+  --bg-primary: #1e1e2e;
+  --bg-secondary: #24243e;
+  --bg-tertiary: #313244;
+  --bg-elevated: #3b3b55;
+  --text-primary: #cdd6f4;
+  --text-secondary: #a6adc8;
+  --text-tertiary: #6c7086;
+  --border: #45475a;
+  --border-subtle: #313244;
+  --accent: #cba6f7;
+  --accent-hover: #d8b9ff;
+  --accent-strong: #e4ccff;
+  --accent-dim: rgba(203, 166, 247, 0.15);
+  --accent-border: rgba(203, 166, 247, 0.25);
+  --accent-bg: rgba(203, 166, 247, 0.08);
+  --success: #a6e3a1;
+  --warning: #f9e2af;
+  --danger: #f38ba8;
+  --info: #89b4fa;
+  --purple: #cba6f7;
+  --cyan: #94e2d5;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.35), inset 0 1px 0 rgba(203,166,247,0.04);
+  --table-hover: rgba(203, 166, 247, 0.07);
+  --pill-bg: var(--bg-tertiary);
+  --pill-active-bg: rgba(203, 166, 247, 0.18);
+}
+
+/* ---------- Solarized Light ---------- */
+[data-theme="solarized-light"] {
+  --bg-primary: #fdf6e3;
+  --bg-secondary: #eee8d5;
+  --bg-tertiary: #e8e1cb;
+  --bg-elevated: #eee8d5;
+  --text-primary: #073642;
+  --text-secondary: #586e75;
+  --text-tertiary: #93a1a1;
+  --border: #d6cdb5;
+  --border-subtle: #e8e1cb;
+  --accent: #268bd2;
+  --accent-hover: #1a7abf;
+  --accent-strong: #0d6ebd;
+  --accent-dim: rgba(38, 139, 210, 0.10);
+  --accent-border: rgba(38, 139, 210, 0.20);
+  --accent-bg: rgba(38, 139, 210, 0.06);
+  --success: #859900;
+  --warning: #b58900;
+  --danger: #dc322f;
+  --info: #268bd2;
+  --purple: #6c71c4;
+  --cyan: #2aa198;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --table-hover: rgba(38, 139, 210, 0.07);
+  --pill-bg: #e0d8c0;
+  --pill-active-bg: rgba(38, 139, 210, 0.15);
+}
+
+/* ---------- GitHub Light ---------- */
+[data-theme="github-light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #eaeef2;
+  --bg-elevated: #f6f8fa;
+  --text-primary: #1f2328;
+  --text-secondary: #656d76;
+  --text-tertiary: #8b949e;
+  --border: #d0d7de;
+  --border-subtle: #eaeef2;
+  --accent: #0969da;
+  --accent-hover: #0860ca;
+  --accent-strong: #0550ae;
+  --accent-dim: rgba(9, 105, 218, 0.10);
+  --accent-border: rgba(9, 105, 218, 0.20);
+  --accent-bg: rgba(9, 105, 218, 0.06);
+  --success: #1a7f37;
+  --warning: #9a6700;
+  --danger: #cf222e;
+  --info: #0969da;
+  --purple: #8250df;
+  --cyan: #0969da;
+  --card-shadow: 0 1px 3px rgba(31,35,40,0.06), 0 1px 2px rgba(31,35,40,0.04);
+  --table-hover: rgba(9, 105, 218, 0.06);
+  --pill-bg: #e1e4e8;
+  --pill-active-bg: rgba(9, 105, 218, 0.12);
+}
+
+/* ---------- Catppuccin Latte (Light) ---------- */
+[data-theme="catppuccin-latte"] {
+  --bg-primary: #eff1f5;
+  --bg-secondary: #e6e9ef;
+  --bg-tertiary: #dce0e8;
+  --bg-elevated: #e6e9ef;
+  --text-primary: #4c4f69;
+  --text-secondary: #6c6f85;
+  --text-tertiary: #9ca0b0;
+  --border: #ccd0da;
+  --border-subtle: #dce0e8;
+  --accent: #8839ef;
+  --accent-hover: #7628df;
+  --accent-strong: #6518cf;
+  --accent-dim: rgba(136, 57, 239, 0.10);
+  --accent-border: rgba(136, 57, 239, 0.20);
+  --accent-bg: rgba(136, 57, 239, 0.06);
+  --success: #40a02b;
+  --warning: #df8e1d;
+  --danger: #d20f39;
+  --info: #1e66f5;
+  --purple: #8839ef;
+  --cyan: #179299;
+  --card-shadow: 0 1px 3px rgba(76,79,105,0.06), 0 1px 2px rgba(76,79,105,0.04);
+  --table-hover: rgba(136, 57, 239, 0.06);
+  --pill-bg: #d0d3dc;
+  --pill-active-bg: rgba(136, 57, 239, 0.12);
+}
+
+/* ---------- Nord Light (Snow Storm) ---------- */
+[data-theme="nord-light"] {
+  --bg-primary: #eceff4;
+  --bg-secondary: #e5e9f0;
+  --bg-tertiary: #d8dee9;
+  --bg-elevated: #e5e9f0;
+  --text-primary: #2e3440;
+  --text-secondary: #4c566a;
+  --text-tertiary: #7b88a1;
+  --border: #c8ced9;
+  --border-subtle: #d8dee9;
+  --accent: #5e81ac;
+  --accent-hover: #4c6e96;
+  --accent-strong: #3b5c80;
+  --accent-dim: rgba(94, 129, 172, 0.10);
+  --accent-border: rgba(94, 129, 172, 0.20);
+  --accent-bg: rgba(94, 129, 172, 0.06);
+  --success: #a3be8c;
+  --warning: #ebcb8b;
+  --danger: #bf616a;
+  --info: #81a1c1;
+  --purple: #b48ead;
+  --cyan: #88c0d0;
+  --card-shadow: 0 1px 3px rgba(46,52,64,0.06), 0 1px 2px rgba(46,52,64,0.04);
+  --table-hover: rgba(94, 129, 172, 0.07);
+  --pill-bg: #cdd3de;
+  --pill-active-bg: rgba(94, 129, 172, 0.15);
+}
+
+/* ---------- Rose Pine Dawn (Light) ---------- */
+[data-theme="rosepine-dawn"] {
+  --bg-primary: #faf4ed;
+  --bg-secondary: #fffaf3;
+  --bg-tertiary: #f2e9de;
+  --bg-elevated: #fffaf3;
+  --text-primary: #575279;
+  --text-secondary: #797593;
+  --text-tertiary: #9893a5;
+  --border: #dfdad9;
+  --border-subtle: #f2e9de;
+  --accent: #d7827e;
+  --accent-hover: #c97370;
+  --accent-strong: #b4637a;
+  --accent-dim: rgba(215, 130, 126, 0.10);
+  --accent-border: rgba(215, 130, 126, 0.20);
+  --accent-bg: rgba(215, 130, 126, 0.06);
+  --success: #56949f;
+  --warning: #ea9d34;
+  --danger: #b4637a;
+  --info: #286983;
+  --purple: #907aa9;
+  --cyan: #56949f;
+  --card-shadow: 0 1px 3px rgba(87,82,121,0.06), 0 1px 2px rgba(87,82,121,0.04);
+  --table-hover: rgba(215, 130, 126, 0.07);
+  --pill-bg: #e8dfd5;
+  --pill-active-bg: rgba(215, 130, 126, 0.15);
+}
+
+/* =========================================================================
+   Base styles
+   ========================================================================= */
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+}
+
+/* Card component */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Tabular numbers for data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
