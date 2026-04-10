@@ -16,3 +16,4 @@ dashboard/data/*
 
 # Superpowers brainstorm
 .superpowers/
+.pio
