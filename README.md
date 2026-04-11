@@ -105,16 +105,35 @@ npm run build:collector
 node dist/index.js
 ```
 
-### Deploy with Docker
+### Deploy
 
-```bash
-cd dashboard
-docker compose up -d --build
+**Infrastructure:** Docker Compose on Bee-Docker (`192.168.100.224`).
+
+```
+Bee-Docker (192.168.100.224)
+├── iot-air-quality-web        ← Next.js, port 3100
+├── iot-air-quality-collector   ← MQTT subscriber → SQLite
+├── emqx                       ← MQTT broker, ports 1883/8884/18083
+└── data/iotnode.db            ← SQLite volume (persists across rebuilds)
 ```
 
-This starts two containers from the same image:
-- **web** — Next.js on port 3100
-- **collector** — MQTT subscriber writing to shared SQLite volume
+**First deploy and updates:** run `./deploy.sh` from the project root. It rsyncs the code to Bee-Docker and rebuilds the containers.
+
+```bash
+./deploy.sh
+```
+
+The script:
+1. Syncs files to `Bee-Docker:/home/rhaguiuda/iotnode/` via rsync (incremental)
+2. Runs `sudo docker compose up -d --build` on the remote
+
+**Containers:** one Docker image, two containers from it:
+- **iot-air-quality-web** — Next.js standalone server on port 3100
+- **iot-air-quality-collector** — Node.js process subscribing to MQTT, writing to SQLite, sending Pushover alerts
+
+**SQLite volume:** mounted at `../data:/app/data`, lives on the host filesystem at `/home/rhaguiuda/iotnode/data/iotnode.db`. Survives container rebuilds and restarts. Only lost if manually deleted or `docker compose down -v` is used.
+
+**Dashboard URL:** `http://192.168.100.224:3100`
 
 ### Data Storage
 

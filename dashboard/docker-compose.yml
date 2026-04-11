@@ -1,5 +1,8 @@
+name: iot-air-quality
+
 services:
   web:
+    container_name: iot-air-quality-web
     build: .
     command: node server.js
     ports:
@@ -11,6 +14,7 @@ services:
     restart: unless-stopped
 
   collector:
+    container_name: iot-air-quality-collector
     build: .
     command: node dist/index.js
     volumes:
