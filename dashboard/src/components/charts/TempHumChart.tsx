@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import {
   ComposedChart,
   Line,
@@ -9,25 +10,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import AnimateIn from "@/components/animation/AnimateIn";
 import {
   CHART_TOOLTIP_STYLE,
   CHART_GRID_PROPS,
   CHART_AXIS_TICK,
-  formatTickTime,
+  createTickFormatter,
   formatFullTime,
 } from "./ChartTooltip";
 
-interface TempHumDataPoint {
+interface TempDataPoint {
   timestamp: number;
   sht4xTemp: number | null;
   scd41Temp: number | null;
-  sht4xUmi: number | null;
-  scd41Umi: number | null;
 }
 
-interface TempHumChartProps {
-  data: TempHumDataPoint[];
+interface TempChartProps {
+  data: TempDataPoint[];
+  rangeSeconds?: number;
 }
 
 interface TooltipPayloadItem {
@@ -45,7 +44,6 @@ interface CustomTooltipProps {
 
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
-
   return (
     <div style={CHART_TOOLTIP_STYLE}>
       <p style={{ color: "var(--text-tertiary)", marginBottom: 4, fontWeight: 500 }}>
@@ -55,8 +53,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         entry.value !== null ? (
           <p key={entry.name} style={{ color: entry.color, margin: "2px 0" }}>
             <span style={{ color: "var(--text-secondary)" }}>{entry.name}: </span>
-            {entry.value}
-            {entry.unit}
+            {typeof entry.value === "number" ? entry.value.toFixed(1) : entry.value}{entry.unit}
           </p>
         ) : null
       )}
@@ -64,134 +61,59 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   );
 }
 
-export default function TempHumChart({ data }: TempHumChartProps) {
+export default memo(function TempChart({ data, rangeSeconds = 3600 }: TempChartProps) {
+  const tickFormatter = createTickFormatter(rangeSeconds);
   return (
-    <AnimateIn>
+    <>
       <div className="card p-4">
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            Temperatura &amp; Umidade
+            Temperatura
           </span>
-          <div className="flex items-center gap-4 flex-wrap justify-end">
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <span
-                className="inline-block w-3 h-0.5 rounded"
-                style={{ background: "var(--success)" }}
-              />
-              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                SHT4x °C
-              </span>
+              <span className="inline-block w-3 h-0.5 rounded" style={{ background: "var(--success)" }} />
+              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>SHT4x</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span
-                className="inline-block w-3"
-                style={{ height: 1, borderTop: "2px dashed var(--info)" }}
-              />
-              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                SCD41 °C
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span
-                className="inline-block w-3 h-0.5 rounded"
-                style={{ background: "#a78bfa" }}
-              />
-              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                SHT4x %
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span
-                className="inline-block w-3"
-                style={{ height: 1, borderTop: "2px dashed #f472b6" }}
-              />
-              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                SCD41 %
-              </span>
+              <span className="inline-block w-3" style={{ height: 1, borderTop: "2px dashed var(--info)" }} />
+              <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>SCD41</span>
             </div>
           </div>
         </div>
 
-        {/* Chart */}
         <ResponsiveContainer width="100%" height={280}>
-          <ComposedChart data={data} margin={{ top: 4, right: 40, left: 0, bottom: 0 }}>
+          <ComposedChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid {...CHART_GRID_PROPS} />
-
             <XAxis
               dataKey="timestamp"
-              tickFormatter={formatTickTime}
+              type="number"
+              domain={["dataMin", "dataMax"]}
+              scale="time"
+              tickFormatter={tickFormatter}
               tick={CHART_AXIS_TICK}
               axisLine={false}
               tickLine={false}
               minTickGap={40}
             />
-
-            <YAxis
-              yAxisId="temp"
-              unit="°C"
-              tick={CHART_AXIS_TICK}
-              axisLine={false}
-              tickLine={false}
-              width={48}
-            />
-
-            <YAxis
-              yAxisId="hum"
-              orientation="right"
-              unit="%"
-              tick={CHART_AXIS_TICK}
-              axisLine={false}
-              tickLine={false}
-              width={40}
-            />
-
+            <YAxis unit="°C" tick={CHART_AXIS_TICK} axisLine={false} tickLine={false} width={48} />
             <Tooltip content={<CustomTooltip />} />
-
             <Line
-              yAxisId="temp"
               type="monotone"
               dataKey="sht4xTemp"
-              name="SHT4x Temp"
+              name="SHT4x"
               unit="°C"
               stroke="var(--success)"
               strokeWidth={2}
               dot={false}
-              connectNulls
+              connectNulls={false}
             />
-
             <Line
-              yAxisId="temp"
               type="monotone"
               dataKey="scd41Temp"
-              name="SCD41 Temp"
+              name="SCD41"
               unit="°C"
               stroke="var(--info)"
-              strokeWidth={1.5}
-              strokeDasharray="5 3"
-              dot={false}
-              connectNulls
-            />
-
-            <Line
-              yAxisId="hum"
-              type="monotone"
-              dataKey="sht4xUmi"
-              name="SHT4x Umidade"
-              unit="%"
-              stroke="#a78bfa"
-              strokeWidth={2}
-              dot={false}
-              connectNulls
-            />
-
-            <Line
-              yAxisId="hum"
-              type="monotone"
-              dataKey="scd41Umi"
-              name="SCD41 Umidade"
-              unit="%"
-              stroke="#f472b6"
               strokeWidth={1.5}
               strokeDasharray="5 3"
               dot={false}
@@ -200,6 +122,6 @@ export default function TempHumChart({ data }: TempHumChartProps) {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-    </AnimateIn>
+    </>
   );
-}
+});

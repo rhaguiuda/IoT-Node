@@ -1,6 +1,6 @@
 # IoT Air Quality Node
 
-Indoor air quality monitoring system with an ESP32-S2 sensor node and a real-time web dashboard. Measures CO2, temperature, humidity, light levels, and volatile organic compounds via four I2C sensors, publishing telemetry over MQTT.
+Indoor air quality monitoring system with an ESP32-S2 sensor node and a real-time web dashboard. Measures CO2, temperature, and humidity using a Sensirion SCD41 NDIR sensor, publishing telemetry over MQTT.
 
 ## Project Structure
 
@@ -20,45 +20,34 @@ IoT-Node/
 | **I2C Bus** | SDA = GPIO 37, SCL = GPIO 39 |
 | **LED** | Built-in heartbeat on GPIO 15 (blinks to indicate the main loop is running) |
 
-### Sensors
+### Sensor
 
 | Sensor | I2C Address | Measurements | Notes |
 |---|---|---|---|
 | **SCD41** (Sensirion) | 0x62 | CO2 (ppm), temperature (°C), humidity (%) | NDIR — measures real CO2 via infrared absorption. Updates every ~5 seconds. |
-| **ENS160** (ScioSense) | 0x53 | eCO2 (ppm), TVOC (ppb), AQI (1-5) | MOX — estimates CO2 equivalent from VOC/hydrogen readings. Not a direct CO2 measurement. |
-| **SHT4x** (Sensirion) | 0x44 | Temperature (°C), humidity (%) | High-accuracy temp/humidity sensor. |
-| **BH1750** (ROHM) | 0x23 | Illuminance (lux) | Ambient light sensor. |
-
-Having both the SCD41 (real CO2) and ENS160 (estimated eCO2) allows direct comparison between the two measurement methods.
 
 ## Data Pipeline
 
 ```
-Sensors (I2C) → Kalman Filter → MQTT (EMQX broker) → Dashboard / Grafana
-                                       │
-                                       ├── WebSocket (:8884) → Browser (real-time)
-                                       └── MQTT (:1883) → Collector → SQLite (history)
+SCD41 (I2C) → Kalman Filter → MQTT (EMQX broker) → Dashboard
+                                     │
+                                     ├── WebSocket (:8884) → Browser (real-time)
+                                     └── MQTT (:1883) → Collector → SQLite (history)
 ```
 
-Each sensor reading passes through an individual `SimpleKalmanFilter` before being published, smoothing out noise while preserving trends.
+Each sensor reading passes through a `SimpleKalmanFilter` before being published, smoothing out noise while preserving trends.
 
 ## MQTT Topics
 
-The node publishes telemetry to an EMQX broker over WiFi. Each topic includes the sensor name to make the data source unambiguous.
+The node publishes telemetry to an EMQX broker over WiFi.
 
-**Topic pattern:** `teras/iotnode/1/telemetry/<sensor>/<measurement>`
+**Topic pattern:** `teras/iotnode/1/telemetry/<measurement>`
 
-| Topic | Sensor | Unit | Update Rate |
-|---|---|---|---|
-| `teras/iotnode/1/telemetry/scd41/co2` | SCD41 | ppm | ~5s |
-| `teras/iotnode/1/telemetry/scd41/temp` | SCD41 | °C | ~5s |
-| `teras/iotnode/1/telemetry/scd41/umi` | SCD41 | % | ~5s |
-| `teras/iotnode/1/telemetry/ens160/eco2` | ENS160 | ppm | ~1s |
-| `teras/iotnode/1/telemetry/ens160/tvoc` | ENS160 | ppb | ~1s |
-| `teras/iotnode/1/telemetry/ens160/airq` | ENS160 | 1-5 | ~1s |
-| `teras/iotnode/1/telemetry/sht4x/temp` | SHT4x | °C | ~1s |
-| `teras/iotnode/1/telemetry/sht4x/umi` | SHT4x | % | ~1s |
-| `teras/iotnode/1/telemetry/bh1750/lux` | BH1750 | lux | ~1s |
+| Topic | Unit | Update Rate |
+|---|---|---|
+| `teras/iotnode/1/telemetry/co2` | ppm | ~5s |
+| `teras/iotnode/1/telemetry/temp` | °C | ~5s |
+| `teras/iotnode/1/telemetry/umi` | % | ~5s |
 
 **Connection details:**
 - **Client ID:** `AirQualityNode`
@@ -66,13 +55,10 @@ The node publishes telemetry to an EMQX broker over WiFi. Each topic includes th
 
 ## Reliability Features
 
-The firmware includes several mechanisms to prevent the node from becoming unresponsive:
-
 - **Watchdog timer (30s)** — automatically resets the device if the main loop stops responding.
-- **Non-blocking WiFi reconnection** — uses a 15-second timeout instead of blocking forever. The main loop continues running during reconnection attempts.
+- **Non-blocking WiFi reconnection** — uses a 15-second timeout instead of blocking forever.
 - **Non-blocking MQTT reconnection** — attempts to reconnect once every 5 seconds without blocking sensor reads.
-- **I2C bus recovery** — if 10 consecutive I2C failures are detected, the firmware performs a clock-out recovery (16 SCL pulses + STOP condition) and reinitializes all sensors.
-- **Graceful sensor degradation** — if a sensor fails to initialize at boot, the others continue operating normally.
+- **I2C bus recovery** — if 10 consecutive I2C failures are detected, the firmware performs a clock-out recovery (16 SCL pulses + STOP condition) and reinitializes the sensor.
 - **Heartbeat LED** — the built-in LED blinks at 1 Hz to provide a visual indication that the firmware is running.
 - **Periodic status line** — prints WiFi state, MQTT state, sensor status, free heap, and uptime every 10 seconds over serial.
 
@@ -97,7 +83,12 @@ The upload and monitor ports are configured in `platformio.ini` for the Lolin S2
 
 ## Dashboard
 
-Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators, 4 historical charts (CO2, Temp/Humidity, TVOC, Lux), and a settings panel for Pushover alerts.
+Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators (CO2, Temperature, Humidity), historical charts, and a settings panel for Pushover alerts.
+
+### Status indicators
+
+- **Sensor Online/Offline** — green if MQTT data received in the last 30 seconds, red otherwise
+- **Broker** — green if WebSocket connection to EMQX is active, red if disconnected
 
 ### Run locally
 
@@ -125,13 +116,44 @@ This starts two containers from the same image:
 - **web** — Next.js on port 3100
 - **collector** — MQTT subscriber writing to shared SQLite volume
 
-## Dependencies
+### Data Storage
+
+The collector persists every MQTT message to SQLite as it arrives (~3 inserts every 5 seconds):
+
+| Measurement | Write frequency |
+|---|---|
+| co2 | ~1 every 5s |
+| temp | ~1 every 5s |
+| umi | ~1 every 5s |
+
+**Retention:** 90 days. The collector purges older records on startup and every 24 hours.
+
+### Dashboard Downsampling
+
+The dashboard API downsamples historical data based on the selected time range:
+
+| Range | Downsampling | Real-time refresh |
+|---|---|---|
+| 1m – 6h | avg per 5s | Yes (every 10s) |
+| 12h | avg per 10s | No |
+| 24h | avg per 15s | No |
+| 3d | avg per 30s | No |
+| 7d | avg per 1 min | No |
+| 14d | avg per 2 min | No |
+| 30d | avg per 5 min | No |
+
+### Alerts (Pushover)
+
+The collector can send push notifications via Pushover:
+- **CO2 high** — triggers when CO2 exceeds threshold (default 1000 ppm), 15-minute cooldown
+- **Sensor offline** — triggers when no data received for X minutes (default 5), 30-minute cooldown
+
+Configure Pushover keys and thresholds in the Settings section of the dashboard.
+
+## Firmware Dependencies
 
 | Library | Version | Purpose |
 |---|---|---|
-| `claws/BH1750` | ^1.3.0 | Light sensor driver |
-| `dfrobot/DFRobot_ENS160` | ^1.0.1 | Air quality sensor driver |
-| `sensirion/arduino-sht` | ^1.2.6 | SHT4x temp/humidity driver |
 | `sensirion/Sensirion I2C SCD4x` | ^0.4.0 | SCD41 CO2 sensor driver |
 | `knolleary/PubSubClient` | ^2.8 | MQTT client |
 | `denyssene/SimpleKalmanFilter` | ^0.1.0 | Signal smoothing |

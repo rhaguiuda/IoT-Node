@@ -24,19 +24,35 @@ export const CHART_AXIS_TICK = {
   fill: "var(--text-tertiary)",
 };
 
-export function formatTickTime(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+export function createTickFormatter(rangeSeconds: number): (timestamp: number) => string {
+  return (timestamp: number) => {
+    const d = new Date(timestamp * 1000);
+    if (rangeSeconds <= 3600) {
+      // Up to 1h: HH:mm:ss
+      return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+    }
+    if (rangeSeconds <= 86400) {
+      // Up to 24h: HH:mm
+      return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hour12: false });
+    }
+    if (rangeSeconds <= 604800) {
+      // Up to 7d: DD/MM HH:mm
+      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const time = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hour12: false });
+      return `${day}/${month} ${time}`;
+    }
+    // 14d, 30d: DD/MM
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    return `${day}/${month}`;
+  };
 }
 
 export function formatFullTime(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
+  const d = new Date(timestamp * 1000);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const time = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+  return `${day}/${month} ${time}`;
 }

@@ -5,20 +5,17 @@ import { THEMES, DEFAULT_THEME } from "@/config/themes";
 
 export default function ThemePicker() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState<string>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") ?? DEFAULT_THEME;
-    }
-    return DEFAULT_THEME;
-  });
+  const [currentTheme, setCurrentTheme] = useState<string>(DEFAULT_THEME);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Apply theme on mount
+  // Sync with localStorage on mount (avoids SSR mismatch)
   useEffect(() => {
-    if (currentTheme === "dark") {
+    const saved = localStorage.getItem("theme") ?? DEFAULT_THEME;
+    setCurrentTheme(saved);
+    if (saved === "dark") {
       document.documentElement.removeAttribute("data-theme");
     } else {
-      document.documentElement.setAttribute("data-theme", currentTheme);
+      document.documentElement.setAttribute("data-theme", saved);
     }
   }, []);
 

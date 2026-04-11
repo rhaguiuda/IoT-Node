@@ -6,7 +6,7 @@ export interface ThemeDef {
 }
 
 export const THEMES: ThemeDef[] = [
-  { id: "dark",             label: "FitBark Dark",      group: "dark",  accent: "#2eccc0" },
+  { id: "dark",             label: "Dark",              group: "dark",  accent: "#2eccc0" },
   { id: "monokai",          label: "Monokai",           group: "dark",  accent: "#a6e22e" },
   { id: "dracula",          label: "Dracula",           group: "dark",  accent: "#bd93f9" },
   { id: "nord",             label: "Nord",              group: "dark",  accent: "#88c0d0" },
@@ -14,7 +14,7 @@ export const THEMES: ThemeDef[] = [
   { id: "onedark",          label: "One Dark",          group: "dark",  accent: "#61afef" },
   { id: "github",           label: "GitHub Dark",       group: "dark",  accent: "#58a6ff" },
   { id: "catppuccin",       label: "Catppuccin Mocha",  group: "dark",  accent: "#cba6f7" },
-  { id: "light",            label: "FitBark Light",     group: "light", accent: "#2eccc0" },
+  { id: "light",            label: "Light",             group: "light", accent: "#2eccc0" },
   { id: "solarized-light",  label: "Solarized Light",   group: "light", accent: "#268bd2" },
   { id: "github-light",     label: "GitHub Light",      group: "light", accent: "#0969da" },
   { id: "catppuccin-latte", label: "Catppuccin Latte",  group: "light", accent: "#8839ef" },

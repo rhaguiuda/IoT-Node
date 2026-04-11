@@ -19,7 +19,6 @@ interface ReadingRow {
 }
 
 export function queryReadings(
-  sensor: string,
   measurement: string,
   fromTimestamp: number,
   downsampleSec: number
@@ -27,18 +26,23 @@ export function queryReadings(
   const d = getDb();
   if (downsampleSec === 0) {
     return d
-      .prepare("SELECT timestamp, value FROM readings WHERE sensor = ? AND measurement = ? AND timestamp >= ? ORDER BY timestamp ASC")
-      .all(sensor, measurement, fromTimestamp) as ReadingRow[];
+      .prepare("SELECT timestamp, value FROM readings WHERE measurement = ? AND timestamp >= ? ORDER BY timestamp ASC")
+      .all(measurement, fromTimestamp) as ReadingRow[];
   }
+  const bucket = Math.floor(downsampleSec);
   return d
     .prepare(`
-      SELECT (timestamp / ? * ?) AS timestamp, AVG(value) AS value
+      SELECT (timestamp / ${bucket} * ${bucket}) AS ts, ROUND(AVG(value), 2) AS value
       FROM readings
-      WHERE sensor = ? AND measurement = ? AND timestamp >= ?
-      GROUP BY timestamp / ?
-      ORDER BY timestamp ASC
+      WHERE measurement = ? AND timestamp >= ?
+      GROUP BY (timestamp / ${bucket})
+      ORDER BY ts ASC
     `)
-    .all(downsampleSec, downsampleSec, sensor, measurement, fromTimestamp, downsampleSec) as ReadingRow[];
+    .all(measurement, fromTimestamp)
+    .map((row) => {
+      const r = row as { ts: number; value: number };
+      return { timestamp: r.ts, value: r.value };
+    });
 }
 
 export function getAllSettings(): Record<string, string> {

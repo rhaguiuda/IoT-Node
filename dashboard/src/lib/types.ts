@@ -4,17 +4,15 @@ export interface Reading {
 }
 
 export interface SensorData {
-  scd41: { co2: Reading[]; temp: Reading[]; umi: Reading[] };
-  ens160: { eco2: Reading[]; tvoc: Reading[]; airq: Reading[] };
-  sht4x: { temp: Reading[]; umi: Reading[] };
-  bh1750: { lux: Reading[] };
+  co2: Reading[];
+  temp: Reading[];
+  umi: Reading[];
 }
 
 export interface RealtimeValues {
-  scd41: { co2: number | null; temp: number | null; umi: number | null };
-  ens160: { eco2: number | null; tvoc: number | null; airq: number | null };
-  sht4x: { temp: number | null; umi: number | null };
-  bh1750: { lux: number | null };
+  co2: number | null;
+  temp: number | null;
+  umi: number | null;
 }
 
 export type ThresholdLevel = "success" | "warning" | "danger" | "info";

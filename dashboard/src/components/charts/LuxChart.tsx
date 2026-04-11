@@ -9,12 +9,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import AnimateIn from "@/components/animation/AnimateIn";
+
 import {
   CHART_TOOLTIP_STYLE,
   CHART_GRID_PROPS,
   CHART_AXIS_TICK,
-  formatTickTime,
+  createTickFormatter,
   formatFullTime,
 } from "./ChartTooltip";
 
@@ -25,6 +25,7 @@ interface LuxDataPoint {
 
 interface LuxChartProps {
   data: LuxDataPoint[];
+  rangeSeconds?: number;
 }
 
 interface TooltipPayloadItem {
@@ -51,7 +52,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         entry.value !== null ? (
           <p key={entry.name} style={{ color: entry.color, margin: "2px 0" }}>
             <span style={{ color: "var(--text-secondary)" }}>Luminosidade: </span>
-            {entry.value} lx
+            {typeof entry.value === "number" ? Math.round(entry.value) : entry.value} lx
           </p>
         ) : null
       )}
@@ -59,9 +60,12 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   );
 }
 
-export default function LuxChart({ data }: LuxChartProps) {
+import { memo } from "react";
+
+export default memo(function LuxChart({ data, rangeSeconds = 3600 }: LuxChartProps) {
+  const tickFormatter = createTickFormatter(rangeSeconds);
   return (
-    <AnimateIn>
+    <>
       <div className="card p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -93,7 +97,10 @@ export default function LuxChart({ data }: LuxChartProps) {
 
             <XAxis
               dataKey="timestamp"
-              tickFormatter={formatTickTime}
+              type="number"
+              domain={["dataMin", "dataMax"]}
+              scale="time"
+              tickFormatter={tickFormatter}
               tick={CHART_AXIS_TICK}
               axisLine={false}
               tickLine={false}
@@ -103,6 +110,7 @@ export default function LuxChart({ data }: LuxChartProps) {
             <YAxis
               unit=" lx"
               tick={CHART_AXIS_TICK}
+              tickFormatter={(v: number) => Math.round(v).toString()}
               axisLine={false}
               tickLine={false}
               width={56}
@@ -118,11 +126,11 @@ export default function LuxChart({ data }: LuxChartProps) {
               strokeWidth={2}
               fill="url(#luxGradient)"
               dot={false}
-              connectNulls
+              connectNulls={false}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </AnimateIn>
+    </>
   );
-}
+});

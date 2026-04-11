@@ -4,6 +4,7 @@ import { checkCo2Alert, checkOfflineAlert, updateLastMessageTime } from "./alert
 
 const MQTT_URL = process.env.MQTT_URL || "mqtt://192.168.100.224:1883";
 const TOPIC = "teras/iotnode/1/telemetry/#";
+const VALID_MEASUREMENTS = new Set(["co2", "temp", "umi"]);
 
 console.log("[COLLECTOR] Starting...");
 console.log(`[COLLECTOR] Connecting to ${MQTT_URL}`);
@@ -19,16 +20,15 @@ client.on("connect", () => {
 });
 
 client.on("message", async (topic, payload) => {
-  const parts = topic.split("/");
-  if (parts.length !== 6) return;
-  const sensor = parts[4];
-  const measurement = parts[5];
+  // topic: teras/iotnode/1/telemetry/<measurement>
+  const measurement = topic.split("/").pop();
+  if (!measurement || !VALID_MEASUREMENTS.has(measurement)) return;
   const value = parseFloat(payload.toString());
   if (isNaN(value)) return;
   const timestamp = Math.floor(Date.now() / 1000);
-  insertReading(sensor, measurement, value, timestamp);
+  insertReading(measurement, value, timestamp);
   updateLastMessageTime();
-  if (sensor === "scd41" && measurement === "co2") {
+  if (measurement === "co2") {
     await checkCo2Alert(value);
   }
 });

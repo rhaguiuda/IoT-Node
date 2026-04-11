@@ -12,12 +12,11 @@ export function getDb(): Database.Database {
     db.exec(`
       CREATE TABLE IF NOT EXISTS readings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        sensor TEXT NOT NULL,
         measurement TEXT NOT NULL,
         value REAL NOT NULL,
         timestamp INTEGER NOT NULL
       );
-      CREATE INDEX IF NOT EXISTS idx_readings_lookup ON readings(sensor, measurement, timestamp);
+      CREATE INDEX IF NOT EXISTS idx_readings_measurement_ts ON readings(measurement, timestamp);
       CREATE TABLE IF NOT EXISTS settings (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
@@ -40,8 +39,8 @@ export function getDb(): Database.Database {
   return db;
 }
 
-export function insertReading(sensor: string, measurement: string, value: number, timestamp: number): void {
-  getDb().prepare("INSERT INTO readings (sensor, measurement, value, timestamp) VALUES (?, ?, ?, ?)").run(sensor, measurement, value, timestamp);
+export function insertReading(measurement: string, value: number, timestamp: number): void {
+  getDb().prepare("INSERT INTO readings (measurement, value, timestamp) VALUES (?, ?, ?)").run(measurement, value, timestamp);
 }
 
 export function getSetting(key: string): string | undefined {

@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import ThemeInit from "@/components/ThemeInit";
 
 export const metadata: Metadata = {
   title: "Air Quality Node",
@@ -16,16 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Inter:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function() {
-            try {
-              var t = localStorage.getItem('theme');
-              if (t && t !== 'dark') document.documentElement.setAttribute('data-theme', t);
-            } catch(e) {}
-          })();
-        `}} />
       </head>
       <body className="min-h-screen antialiased">
+        <ThemeInit />
         {children}
       </body>
     </html>
