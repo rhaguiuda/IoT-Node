@@ -83,7 +83,7 @@ The upload and monitor ports are configured in `platformio.ini` for the Lolin S2
 
 ## Dashboard
 
-Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators (CO2, Temperature, Humidity), historical charts, and a settings panel for Pushover alerts.
+Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators (CO2, Temperature, Humidity), historical charts, and a settings panel for Pushover alerts. Icons from Google Material Symbols.
 
 ### Status indicators
 
@@ -144,6 +144,21 @@ The dashboard API downsamples historical data based on the selected time range:
 | 60d | avg per 10 min | No |
 | 90d | avg per 15 min | No |
 
+### CO₂ Scale
+
+| Range (ppm) | Level | Color |
+|---|---|---|
+| < 600 | Excelente | Green |
+| 600–800 | Bom | Green |
+| 800–1000 | Aceitável | Green |
+| 1000–1200 | Alerta | Orange |
+| 1200–1500 | Ruim | Red |
+| 1500–2000 | Muito Ruim | Dark red |
+| 2000–5000 | Péssimo | Darker red |
+| > 5000 | Perigo | Darkest red |
+
+The CO₂ KPI card includes a hover info popup showing this full scale.
+
 ### Alerts (Pushover)
 
 The collector can send push notifications via Pushover:
@@ -158,4 +173,4 @@ Configure Pushover keys and thresholds in the Settings section of the dashboard.
 |---|---|---|
 | `sensirion/Sensirion I2C SCD4x` | ^0.4.0 | SCD41 CO2 sensor driver |
 | `knolleary/PubSubClient` | ^2.8 | MQTT client |
-| `denyssene/SimpleKalmanFilter` | ^0.1.0 | Signal smoothing |
+| `denyssene/SimpleKalmanFilter` | ^0.1.0 | Signal smoothing (light, q=0.5) |
