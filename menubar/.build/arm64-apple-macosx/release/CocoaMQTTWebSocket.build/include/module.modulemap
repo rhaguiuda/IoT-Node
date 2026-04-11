@@ -1,3 +1,0 @@
-module CocoaMQTTWebSocket {
-    header "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/include/CocoaMQTTWebSocket-Swift.h"
-}
