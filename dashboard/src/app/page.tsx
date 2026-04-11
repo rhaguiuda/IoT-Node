@@ -91,6 +91,7 @@ const SimpleChart = memo(function SimpleChart({
             fill={`url(#${gradientId})`}
             dot={false}
             connectNulls={false}
+            isAnimationActive={false}
           />
         </AreaChart>
       </ResponsiveContainer>

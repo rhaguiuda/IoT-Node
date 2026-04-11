@@ -5,6 +5,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <esp_task_wdt.h>
+#include <Preferences.h>
+#include <esp_system.h>
 
 // Configuracao da rede Wi-Fi
 #define WIFI_SSID "NHag"
@@ -50,6 +52,7 @@ bool wifiConnecting = false;
 bool ledState = false;
 
 uint8_t i2cFailCount = 0;
+const char* lastResetReason = "UNKNOWN";
 #define I2C_FAIL_THRESHOLD 10
 
 void handleLed(unsigned long now) {
@@ -177,12 +180,57 @@ void readAndPublish() {
     }
 }
 
+const char* getResetReasonStr(esp_reset_reason_t reason) {
+    switch (reason) {
+        case ESP_RST_POWERON:  return "POWER_ON";
+        case ESP_RST_EXT:      return "EXTERNAL";
+        case ESP_RST_SW:       return "SOFTWARE";
+        case ESP_RST_PANIC:    return "PANIC/CRASH";
+        case ESP_RST_INT_WDT:  return "INTERRUPT_WDT";
+        case ESP_RST_TASK_WDT: return "TASK_WDT";
+        case ESP_RST_WDT:      return "OTHER_WDT";
+        case ESP_RST_DEEPSLEEP: return "DEEP_SLEEP";
+        case ESP_RST_BROWNOUT: return "BROWNOUT";
+        case ESP_RST_SDIO:     return "SDIO";
+        default:               return "UNKNOWN";
+    }
+}
+
 void setup() {
     Serial.begin(115200);
     delay(500);
+
+    // Boot diagnostics
+    esp_reset_reason_t resetReason = esp_reset_reason();
+    lastResetReason = getResetReasonStr(resetReason);
+    Preferences prefs;
+    prefs.begin("diag", false);
+    uint32_t bootCount = prefs.getUInt("boots", 0) + 1;
+    prefs.putUInt("boots", bootCount);
+
+    // Track reset reasons
+    uint32_t wdtCount = prefs.getUInt("wdt", 0);
+    uint32_t brownoutCount = prefs.getUInt("brownout", 0);
+    uint32_t panicCount = prefs.getUInt("panic", 0);
+
+    if (resetReason == ESP_RST_TASK_WDT || resetReason == ESP_RST_INT_WDT || resetReason == ESP_RST_WDT) {
+        wdtCount++;
+        prefs.putUInt("wdt", wdtCount);
+    } else if (resetReason == ESP_RST_BROWNOUT) {
+        brownoutCount++;
+        prefs.putUInt("brownout", brownoutCount);
+    } else if (resetReason == ESP_RST_PANIC) {
+        panicCount++;
+        prefs.putUInt("panic", panicCount);
+    }
+    prefs.end();
+
     Serial.println("\n==============================");
-    Serial.println("  IoT Air Quality Node v4.0");
-    Serial.println("==============================\n");
+    Serial.println("  IoT Air Quality Node v4.1");
+    Serial.println("==============================");
+    Serial.printf("[BOOT] Count: %u\n", bootCount);
+    Serial.printf("[BOOT] Reset reason: %s (%d)\n", getResetReasonStr(resetReason), resetReason);
+    Serial.printf("[BOOT] History — WDT: %u | Brownout: %u | Panic: %u\n\n", wdtCount, brownoutCount, panicCount);
 
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
@@ -220,11 +268,12 @@ void loop() {
 
     if (now - lastWiFiStatus >= WIFI_STATUS_INTERVAL_MS) {
         lastWiFiStatus = now;
-        Serial.printf("[STATUS] WiFi=%s | MQTT=%s | SCD41=%d | Heap=%u bytes | Uptime=%lus\n",
+        Serial.printf("[STATUS] WiFi=%s | MQTT=%s | SCD41=%d | Heap=%u | Uptime=%lus | LastReset=%s\n",
             WiFi.status() == WL_CONNECTED ? "OK" : "DESCONECTADO",
             client.connected() ? "OK" : "DESCONECTADO",
             scd41_ok,
             ESP.getFreeHeap(),
-            millis() / 1000);
+            millis() / 1000,
+            lastResetReason);
     }
 }

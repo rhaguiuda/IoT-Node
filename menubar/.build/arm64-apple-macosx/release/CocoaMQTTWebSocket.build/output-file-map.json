@@ -1,0 +1,13 @@
+{
+  "": {
+    "dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/CocoaMQTTWebSocket.d",
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/CocoaMQTTWebSocket.o",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/primary.swiftdeps"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTWebSocket.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/CocoaMQTTWebSocket.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/CocoaMQTTWebSocket~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/CocoaMQTTWebSocket.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTTWebSocket.build/CocoaMQTTWebSocket.dia"
+  }
+}

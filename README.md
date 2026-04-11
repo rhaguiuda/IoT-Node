@@ -1,6 +1,6 @@
 # IoT Air Quality Node
 
-Indoor air quality monitoring system with an ESP32-S2 sensor node and a real-time web dashboard. Measures CO2, temperature, and humidity using a Sensirion SCD41 NDIR sensor, publishing telemetry over MQTT.
+Indoor air quality monitoring system with an ESP32-S2 sensor node, a real-time web dashboard, and a macOS menu bar app. Measures CO2, temperature, and humidity using a Sensirion SCD41 NDIR sensor, publishing telemetry over MQTT.
 
 ## Project Structure
 
@@ -8,6 +8,7 @@ Indoor air quality monitoring system with an ESP32-S2 sensor node and a real-tim
 IoT-Node/
 ├── firmware/      ← ESP32-S2 PlatformIO firmware
 ├── dashboard/     ← Next.js web dashboard + MQTT collector
+├── menubar/       ← macOS menu bar app (Swift)
 └── docs/          ← Design specs and plans
 ```
 
@@ -29,13 +30,14 @@ IoT-Node/
 ## Data Pipeline
 
 ```
-SCD41 (I2C) → Kalman Filter → MQTT (EMQX broker) → Dashboard
+SCD41 (I2C) → Kalman Filter → MQTT (EMQX broker)
                                      │
-                                     ├── WebSocket (:8884) → Browser (real-time)
-                                     └── MQTT (:1883) → Collector → SQLite (history)
+                                     ├── WebSocket (:8884) → Browser (real-time dashboard)
+                                     ├── MQTT (:1883) → Collector → SQLite (history)
+                                     └── MQTT (:1883) → macOS menu bar app (real-time)
 ```
 
-Each sensor reading passes through a `SimpleKalmanFilter` before being published, smoothing out noise while preserving trends.
+Each sensor reading passes through a `SimpleKalmanFilter` (q=0.5, light smoothing) before being published.
 
 ## MQTT Topics
 
@@ -60,7 +62,8 @@ The node publishes telemetry to an EMQX broker over WiFi.
 - **Non-blocking MQTT reconnection** — attempts to reconnect once every 5 seconds without blocking sensor reads.
 - **I2C bus recovery** — if 10 consecutive I2C failures are detected, the firmware performs a clock-out recovery (16 SCL pulses + STOP condition) and reinitializes the sensor.
 - **Heartbeat LED** — the built-in LED blinks at 1 Hz to provide a visual indication that the firmware is running.
-- **Periodic status line** — prints WiFi state, MQTT state, sensor status, free heap, and uptime every 10 seconds over serial.
+- **Boot diagnostics** — tracks reset reason (power on, watchdog, brownout, panic) and boot count in NVS flash. Cumulative counters persist across reboots for debugging intermittent failures.
+- **Periodic status line** — prints WiFi state, MQTT state, sensor status, free heap, uptime, and last reset reason every 10 seconds over serial.
 
 ## Firmware — Build & Flash
 
@@ -83,7 +86,7 @@ The upload and monitor ports are configured in `platformio.ini` for the Lolin S2
 
 ## Dashboard
 
-Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators (CO2, Temperature, Humidity), historical charts, and a settings panel for Pushover alerts. Icons from Google Material Symbols.
+Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators (CO2, Temperature, Humidity) and historical charts. Icons from Google Material Symbols.
 
 ### Status indicators
 
@@ -129,7 +132,7 @@ The script:
 
 **Containers:** one Docker image, two containers from it:
 - **iot-air-quality-web** — Next.js standalone server on port 3100
-- **iot-air-quality-collector** — Node.js process subscribing to MQTT, writing to SQLite, sending Pushover alerts
+- **iot-air-quality-collector** — Node.js process subscribing to MQTT, writing to SQLite
 
 **SQLite volume:** mounted at `../data:/app/data`, lives on the host filesystem at `/home/rhaguiuda/iotnode/data/iotnode.db`. Survives container rebuilds and restarts. Only lost if manually deleted or `docker compose down -v` is used.
 
@@ -178,13 +181,49 @@ The dashboard API downsamples historical data based on the selected time range:
 
 The CO₂ KPI card includes a hover info popup showing this full scale.
 
-### Alerts (Pushover)
+## macOS Menu Bar App
 
-The collector can send push notifications via Pushover:
-- **CO2 high** — triggers when CO2 exceeds threshold (default 1000 ppm), 15-minute cooldown
-- **Sensor offline** — triggers when no data received for X minutes (default 5), 30-minute cooldown
+Native Swift app that shows real-time CO₂, temperature, and humidity in the macOS menu bar. Connects directly to EMQX via MQTT (no backend needed).
 
-Configure Pushover keys and thresholds in the Settings section of the dashboard.
+### What it shows
+
+**Menu bar:** `1143ppm  29.5°  45%` — all three values updated in real-time (~5s).
+
+**Popover (click):** expanded view with metric rows, color-coded status indicators, last update timestamp, and a link to open the web dashboard.
+
+### Build
+
+Requires Swift 5.9+ and macOS 13+. Uses CocoaMQTT via Swift Package Manager.
+
+```bash
+cd menubar
+
+# Debug build
+swift build
+
+# Release build
+swift build -c release
+```
+
+### Install as .app
+
+The release build is packaged as a macOS app bundle at `menubar/build/AirQuality.app`.
+
+```bash
+# Copy to Applications
+cp -R menubar/build/AirQuality.app /Applications/
+
+# Open
+open /Applications/AirQuality.app
+```
+
+The app runs as a menu bar agent (`LSUIElement = true`) — no Dock icon. Add it to **System Settings → General → Login Items** to start automatically on boot.
+
+### Architecture
+
+- **MQTTClient.swift** — CocoaMQTT5 connection to `192.168.100.224:1883`, subscribes to `teras/iotnode/1/telemetry/#`, parses measurements, publishes to SwiftUI via `@Published` properties
+- **AirQualityApp.swift** — `MenuBarExtra` entry point, renders values in menu bar label
+- **PopoverView.swift** — expanded popover with metric rows, status colors, dashboard link
 
 ## Firmware Dependencies
 

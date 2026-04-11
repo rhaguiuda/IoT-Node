@@ -1,0 +1,26 @@
+{
+  "": {
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/primary.swiftdeps"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/AirQuality/AirQualityApp.swift": {
+    "dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/AirQualityApp.d",
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/AirQualityApp.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/AirQualityApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/AirQualityApp.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/AirQualityApp.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/AirQuality/MQTTClient.swift": {
+    "dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/MQTTClient.d",
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/MQTTClient.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/MQTTClient~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/MQTTClient.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/MQTTClient.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/AirQuality/PopoverView.swift": {
+    "dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/PopoverView.d",
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/PopoverView.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/PopoverView~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/PopoverView.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/debug/AirQuality.build/PopoverView.dia"
+  }
+}

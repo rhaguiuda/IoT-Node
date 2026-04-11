@@ -1,0 +1,4 @@
+module MqttCocoaAsyncSocket {
+    umbrella "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/MqttCocoaAsyncSocket/Source/GCD"
+    export *
+}

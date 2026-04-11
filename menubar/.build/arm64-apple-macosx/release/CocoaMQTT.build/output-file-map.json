@@ -1,0 +1,265 @@
+{
+  "": {
+    "dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT.d",
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT.o",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/primary.swiftdeps"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTT.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTT5.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTT5Message.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5Message.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5Message~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5Message.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTT5Message.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTDeliver.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTDeliver.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTDeliver~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTDeliver.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTDeliver.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTLogger.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTLogger.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTLogger~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTLogger.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTLogger.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTMessage.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTMessage.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTMessage~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTMessage.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTMessage.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTProperty.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTProperty.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTProperty~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTProperty.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTProperty.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTReader.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReader.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReader~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReader.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReader.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTReasonCode.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReasonCode.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReasonCode~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReasonCode.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTReasonCode.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTSocket.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTSocket.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTSocket~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTSocket.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTSocket.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTStorage.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTStorage.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTStorage~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTStorage.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTStorage.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTTimer.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTimer.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTimer~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTimer.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTimer.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/CocoaMQTTTypes.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTypes.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTypes.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/CocoaMQTTTypes.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/Frame.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/Frame.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/Frame~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/Frame.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/Frame.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameAuth.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameAuth.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameAuth~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameAuth.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameAuth.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameConnAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameConnect.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnect.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnect~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnect.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameConnect.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameDisconnect.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameDisconnect.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameDisconnect~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameDisconnect.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameDisconnect.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FramePingReq.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingReq.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingReq~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingReq.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingReq.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FramePingResp.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingResp.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingResp~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingResp.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePingResp.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FramePubAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FramePubComp.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubComp.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubComp~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubComp.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubComp.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FramePubRec.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRec.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRec~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRec.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRec.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FramePubRel.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRel.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRel~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRel.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePubRel.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FramePublish.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePublish.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePublish~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePublish.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FramePublish.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameSubAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameSubscribe.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubscribe.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubscribe~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubscribe.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameSubscribe.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameUnsubAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/FrameUnsubscribe.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubscribe.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubscribe~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubscribe.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/FrameUnsubscribe.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttAuthProperties.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttAuthProperties.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttAuthProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttAuthProperties.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttAuthProperties.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttConnectProperties.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttConnectProperties.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttConnectProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttConnectProperties.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttConnectProperties.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodeConnAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeConnAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeConnAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeConnAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeConnAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodePubAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodePubComp.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubComp.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubComp~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubComp.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubComp.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodePubRec.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRec.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRec~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRec.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRec.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodePubRel.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRel.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRel~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRel.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePubRel.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodePublish.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePublish.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePublish~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePublish.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodePublish.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodeSubAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeSubAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeSubAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeSubAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeSubAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttDecodeUnsubAck.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeUnsubAck.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeUnsubAck~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeUnsubAck.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttDecodeUnsubAck.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttPublishProperties.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttPublishProperties.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttPublishProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttPublishProperties.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttPublishProperties.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/MqttSubscription.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttSubscription.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttSubscription~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttSubscription.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/MqttSubscription.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/ThreadSafeDictionary.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ThreadSafeDictionary.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ThreadSafeDictionary~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ThreadSafeDictionary.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ThreadSafeDictionary.dia"
+  },
+  "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/checkouts/CocoaMQTT/Source/utilities/ConcurrentAtomic.swift": {
+    "object": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ConcurrentAtomic.swift.o",
+    "swiftmodule": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ConcurrentAtomic~partial.swiftmodule",
+    "swift-dependencies": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ConcurrentAtomic.swiftdeps",
+    "diagnostics": "/Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/menubar/.build/arm64-apple-macosx/release/CocoaMQTT.build/ConcurrentAtomic.dia"
+  }
+}
