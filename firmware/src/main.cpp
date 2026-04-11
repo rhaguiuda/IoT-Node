@@ -34,9 +34,9 @@ SensirionI2CScd4x scd41;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-SimpleKalmanFilter kalmanCO2(3, 5, 0.01);
-SimpleKalmanFilter kalmanTemp(3, 5, 0.01);
-SimpleKalmanFilter kalmanUmi(3, 5, 0.01);
+SimpleKalmanFilter kalmanCO2(3, 5, 0.5);
+SimpleKalmanFilter kalmanTemp(3, 5, 0.5);
+SimpleKalmanFilter kalmanUmi(3, 5, 0.5);
 
 bool scd41_ok = false;
 

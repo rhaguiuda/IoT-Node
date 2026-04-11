@@ -18,7 +18,7 @@ export const RANGES: RangeConfig[] = [
   { id: "90d", label: "90d", seconds: 7776000,    downsampleSec: 900, realtime: false },
 ];
 
-export const DEFAULT_RANGE: RangeId = "1h";
+export const DEFAULT_RANGE: RangeId = "15m";
 
 export function getRangeConfig(id: RangeId): RangeConfig {
   return RANGES.find((r) => r.id === id)!;

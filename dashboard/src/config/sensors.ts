@@ -10,9 +10,9 @@ export interface SensorMetric {
 }
 
 export const SENSOR_METRICS: SensorMetric[] = [
-  { measurement: "co2", topic: `${MQTT_TOPIC_PREFIX}/co2`, label: "CO₂", unit: "ppm", icon: "Wind" },
-  { measurement: "temp", topic: `${MQTT_TOPIC_PREFIX}/temp`, label: "Temperatura", unit: "°C", icon: "Thermometer" },
-  { measurement: "umi", topic: `${MQTT_TOPIC_PREFIX}/umi`, label: "Umidade", unit: "%", icon: "Droplets" },
+  { measurement: "co2", topic: `${MQTT_TOPIC_PREFIX}/co2`, label: "CO₂", unit: "ppm", icon: "co2" },
+  { measurement: "temp", topic: `${MQTT_TOPIC_PREFIX}/temp`, label: "Temperatura", unit: "°C", icon: "thermostat" },
+  { measurement: "umi", topic: `${MQTT_TOPIC_PREFIX}/umi`, label: "Umidade", unit: "%", icon: "humidity_percentage" },
 ];
 
 export const KPI_METRICS = ["co2", "temp", "umi"];

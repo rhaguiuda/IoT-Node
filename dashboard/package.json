@@ -9,23 +9,22 @@
     "build:collector": "tsc -p collector/tsconfig.json"
   },
   "dependencies": {
+    "better-sqlite3": "latest",
+    "motion": "latest",
+    "mqtt": "latest",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "recharts": "latest",
-    "mqtt": "latest",
-    "motion": "latest",
-    "lucide-react": "latest",
-    "better-sqlite3": "latest"
+    "recharts": "latest"
   },
   "devDependencies": {
-    "typescript": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
+    "@tailwindcss/postcss": "latest",
     "@types/better-sqlite3": "latest",
     "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "postcss": "latest",
     "tailwindcss": "latest",
-    "@tailwindcss/postcss": "latest",
-    "postcss": "latest"
+    "typescript": "latest"
   }
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
+import MaterialIcon from "@/components/MaterialIcon";
 import CountUp from "@/components/animation/CountUp";
 import StatusBadge from "@/components/StatusBadge";
+import Co2ScaleInfo from "@/components/Co2ScaleInfo";
 import { getThreshold } from "@/lib/thresholds";
 
 interface KpiCardProps {
-  icon: LucideIcon;
+  iconName: string;
   value: number | null;
   label: string;
   unit: string;
@@ -15,7 +16,7 @@ interface KpiCardProps {
 }
 
 export default function KpiCard({
-  icon: Icon,
+  iconName,
   value,
   label,
   unit,
@@ -27,39 +28,57 @@ export default function KpiCard({
   const decimals = needsDecimal ? 1 : 0;
 
   return (
-    <div className="card p-4 h-full">
-      <div className="flex items-center gap-3.5 h-full">
-        <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: `linear-gradient(135deg, ${iconColor}22, ${iconColor}0a)` }}
+    <div
+      className="h-full relative overflow-hidden"
+      style={{
+        background: "var(--bg-secondary)",
+        border: "1px solid var(--border)",
+        borderLeft: `4px solid ${iconColor}`,
+        borderRadius: "var(--card-radius)",
+        boxShadow: "var(--card-shadow)",
+        padding: "20px",
+      }}
+    >
+      {/* Ghost icon background */}
+      <div className="absolute -top-1 -right-1 pointer-events-none" style={{ opacity: 0.08 }}>
+        <MaterialIcon name={iconName} size={64} color={iconColor} />
+      </div>
+
+      {/* Label + info icon */}
+      <div className="flex items-center gap-1.5 mb-2.5">
+        <span
+          className="text-[10px] font-medium uppercase tracking-wider"
+          style={{ color: "var(--text-tertiary)" }}
         >
-          <Icon className="w-[22px] h-[22px]" style={{ color: iconColor }} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div
-            className="text-[22px] font-bold tracking-tight leading-none tabular-nums"
-            style={{ color: "var(--text-primary)", fontFamily: "var(--font-display)" }}
-          >
-            {value !== null ? (
-              <>
-                <CountUp value={value} decimals={decimals} duration={0.5} />
-                {unit && <span className="text-[14px] font-medium ml-0.5">{unit}</span>}
-              </>
-            ) : (
-              <span style={{ color: "var(--text-tertiary)" }}>--</span>
-            )}
-          </div>
-          <div className="mt-1">
-            <span className="text-[11px] font-medium uppercase tracking-wider leading-tight" style={{ color: "var(--text-tertiary)" }}>
-              {label}
-            </span>
-          </div>
-          <div className="mt-1 min-h-[22px]">
-            {threshold && threshold.label ? (
-              <StatusBadge level={threshold.level} label={threshold.label} />
-            ) : null}
-          </div>
-        </div>
+          {label}
+        </span>
+        {measurement === "co2" && <Co2ScaleInfo />}
+      </div>
+
+      {/* Value */}
+      <div className="flex items-baseline gap-1.5">
+        <span
+          className="text-[36px] font-bold tracking-tight leading-none tabular-nums"
+          style={{ color: "var(--text-primary)", fontFamily: "var(--font-display)", letterSpacing: "-2px" }}
+        >
+          {value !== null ? (
+            <CountUp value={value} decimals={decimals} duration={0.5} />
+          ) : (
+            <span style={{ color: "var(--text-tertiary)" }}>--</span>
+          )}
+        </span>
+        {value !== null && unit && (
+          <span className="text-[13px] font-medium" style={{ color: "var(--text-tertiary)" }}>
+            {unit}
+          </span>
+        )}
+      </div>
+
+      {/* Badge */}
+      <div className="mt-3 min-h-[22px]">
+        {threshold && threshold.label ? (
+          <StatusBadge level={threshold.level} label={threshold.label} />
+        ) : null}
       </div>
     </div>
   );

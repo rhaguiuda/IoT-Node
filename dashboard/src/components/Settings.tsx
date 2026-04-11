@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import MaterialIcon from "@/components/MaterialIcon";
 import type { Settings } from "@/lib/types";
 
 const defaultSettings: Settings = {
@@ -62,13 +62,12 @@ export default function SettingsPanel() {
         role="button"
         aria-expanded={isOpen}
       >
-        <ChevronDown
-          className="w-4 h-4 transition-transform duration-200"
-          style={{
-            color: "var(--text-secondary)",
-            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-          }}
-        />
+        <span
+          className="transition-transform duration-200 inline-flex"
+          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+        >
+          <MaterialIcon name="expand_more" size={18} color="var(--text-secondary)" />
+        </span>
         <span className="text-sm font-semibold text-[var(--text-secondary)]">
           Configurações
         </span>

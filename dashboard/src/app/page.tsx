@@ -80,8 +80,8 @@ const SimpleChart = memo(function SimpleChart({
           )}
           <Tooltip
             contentStyle={CHART_TOOLTIP_STYLE}
-            labelFormatter={(ts: number) => formatFullTime(ts)}
-            formatter={(v: number) => [formatValue(v), title]}
+            labelFormatter={(ts) => formatFullTime(Number(ts))}
+            formatter={(v) => [formatValue(Number(v)), title]}
           />
           <Area
             type="monotone"

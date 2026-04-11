@@ -28,22 +28,24 @@ export default function Header({ connected, lastMessage, range, onRangeChange }:
   }, [lastMessage]);
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4 px-4 py-3">
-      <div className="flex items-center gap-3">
-        <h2 className="text-xl font-bold font-display">Air Quality Node</h2>
-        <StatusBadge
-          level={sensorAlive ? "success" : "danger"}
-          label={sensorAlive ? "Sensor Online" : "Sensor Offline"}
-        />
-        <StatusBadge
-          level={connected ? "success" : "danger"}
-          label={connected ? "Broker" : "Broker Offline"}
-        />
-      </div>
-      <div className="flex items-center gap-2 min-w-0">
-        <RangeSelector value={range} onChange={onRangeChange} />
+    <header className="space-y-3 px-4 py-3">
+      {/* Top row: title + badges + theme picker */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold font-display">Air Quality Node</h2>
+          <StatusBadge
+            level={sensorAlive ? "success" : "danger"}
+            label={sensorAlive ? "Sensor Online" : "Sensor Offline"}
+          />
+          <StatusBadge
+            level={connected ? "success" : "danger"}
+            label={connected ? "Broker" : "Broker Offline"}
+          />
+        </div>
         <ThemePicker />
       </div>
+      {/* Bottom row: range selector full width */}
+      <RangeSelector value={range} onChange={onRangeChange} />
     </header>
   );
 }
