@@ -1,6 +1,15 @@
 # IoT Air Quality Node
 
-Indoor air quality monitoring node that measures CO2, temperature, humidity, light levels, and volatile organic compounds. Built with an ESP32-S2 (Lolin S2 Mini) and four I2C sensors, publishing telemetry data over MQTT for visualization in Grafana.
+Indoor air quality monitoring system with an ESP32-S2 sensor node and a real-time web dashboard. Measures CO2, temperature, humidity, light levels, and volatile organic compounds via four I2C sensors, publishing telemetry over MQTT.
+
+## Project Structure
+
+```
+IoT-Node/
+├── firmware/      ← ESP32-S2 PlatformIO firmware
+├── dashboard/     ← Next.js web dashboard + MQTT collector
+└── docs/          ← Design specs and plans
+```
 
 ## Hardware
 
@@ -25,7 +34,10 @@ Having both the SCD41 (real CO2) and ENS160 (estimated eCO2) allows direct compa
 ## Data Pipeline
 
 ```
-Sensors (I2C) → Kalman Filter → MQTT (EMQX broker) → Grafana
+Sensors (I2C) → Kalman Filter → MQTT (EMQX broker) → Dashboard / Grafana
+                                       │
+                                       ├── WebSocket (:8884) → Browser (real-time)
+                                       └── MQTT (:1883) → Collector → SQLite (history)
 ```
 
 Each sensor reading passes through an individual `SimpleKalmanFilter` before being published, smoothing out noise while preserving trends.
@@ -64,11 +76,13 @@ The firmware includes several mechanisms to prevent the node from becoming unres
 - **Heartbeat LED** — the built-in LED blinks at 1 Hz to provide a visual indication that the firmware is running.
 - **Periodic status line** — prints WiFi state, MQTT state, sensor status, free heap, and uptime every 10 seconds over serial.
 
-## Build & Flash
+## Firmware — Build & Flash
 
-Requires [PlatformIO](https://platformio.org/).
+Requires [PlatformIO](https://platformio.org/). Firmware source is in `firmware/`.
 
 ```bash
+cd firmware
+
 # Compile
 pio run
 
@@ -80,6 +94,36 @@ pio device monitor
 ```
 
 The upload and monitor ports are configured in `platformio.ini` for the Lolin S2 Mini.
+
+## Dashboard
+
+Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators, 4 historical charts (CO2, Temp/Humidity, TVOC, Lux), and a settings panel for Pushover alerts.
+
+### Run locally
+
+```bash
+cd dashboard
+npm install
+npm run dev          # http://localhost:3000
+```
+
+The collector (MQTT subscriber that persists data to SQLite) runs separately:
+
+```bash
+npm run build:collector
+node dist/index.js
+```
+
+### Deploy with Docker
+
+```bash
+cd dashboard
+docker compose up -d --build
+```
+
+This starts two containers from the same image:
+- **web** — Next.js on port 3100
+- **collector** — MQTT subscriber writing to shared SQLite volume
 
 ## Dependencies
 

@@ -1,0 +1,21 @@
+services:
+  web:
+    build: .
+    command: node server.js
+    ports:
+      - "3100:3000"
+    volumes:
+      - ../data:/app/data
+    environment:
+      - DB_PATH=/app/data/iotnode.db
+    restart: unless-stopped
+
+  collector:
+    build: .
+    command: node dist/index.js
+    volumes:
+      - ../data:/app/data
+    environment:
+      - DB_PATH=/app/data/iotnode.db
+      - MQTT_URL=mqtt://192.168.100.224:1883
+    restart: unless-stopped
