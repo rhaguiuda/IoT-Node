@@ -141,6 +141,8 @@ The dashboard API downsamples historical data based on the selected time range:
 | 7d | avg per 1 min | No |
 | 14d | avg per 2 min | No |
 | 30d | avg per 5 min | No |
+| 60d | avg per 10 min | No |
+| 90d | avg per 15 min | No |
 
 ### Alerts (Pushover)
 

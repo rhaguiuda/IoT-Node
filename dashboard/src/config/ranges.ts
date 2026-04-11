@@ -14,6 +14,8 @@ export const RANGES: RangeConfig[] = [
   { id: "7d",  label: "7d",  seconds: 604800,     downsampleSec: 60,  realtime: false },
   { id: "14d", label: "14d", seconds: 1209600,    downsampleSec: 120, realtime: false },
   { id: "30d", label: "30d", seconds: 2592000,    downsampleSec: 300, realtime: false },
+  { id: "60d", label: "60d", seconds: 5184000,    downsampleSec: 600, realtime: false },
+  { id: "90d", label: "90d", seconds: 7776000,    downsampleSec: 900, realtime: false },
 ];
 
 export const DEFAULT_RANGE: RangeId = "1h";
