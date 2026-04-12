@@ -13,11 +13,12 @@ interface TrendIndicatorProps {
 function getTrendColor(direction: TrendDirection, measurement: string): string {
   if (direction === "stable" || direction === null) return "var(--text-tertiary)";
 
+  // CO2: up is bad, down is good
   if (measurement === "co2") {
     return direction === "up" ? "var(--danger)" : "var(--success)";
   }
-  // temp and umi: neutral for now
-  return "var(--text-secondary)";
+  // Temp and humidity: up is warning (orange), down is info (blue)
+  return direction === "up" ? "var(--warning)" : "var(--info)";
 }
 
 function getIconName(direction: TrendDirection): string {
