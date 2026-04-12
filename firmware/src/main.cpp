@@ -26,10 +26,13 @@
 // Timeouts e intervalos
 #define WIFI_CONNECT_TIMEOUT_MS   15000
 #define MQTT_RETRY_INTERVAL_MS    5000
-#define SENSOR_READ_INTERVAL_MS   1000
+#define SENSOR_READ_INTERVAL_MS   5000   // SCD41 updates every ~5s, no point polling faster
 #define WIFI_STATUS_INTERVAL_MS   10000
 #define LED_TOGGLE_INTERVAL_MS    500
-#define WDT_TIMEOUT_S             30
+#define UPTIME_SAVE_INTERVAL_MS   60000
+#define WDT_TIMEOUT_S             15     // Tighter watchdog (was 30s)
+#define I2C_TIMEOUT_MS            1000   // I2C transaction timeout
+#define AUTO_RESTART_HOURS        24     // Preventive restart every 24h
 
 SensirionI2CScd4x scd41;
 
@@ -47,13 +50,14 @@ unsigned long lastSensorRead = 0;
 unsigned long lastWiFiStatus = 0;
 unsigned long lastMqttRetry = 0;
 unsigned long lastLedToggle = 0;
+unsigned long lastUptimeSave = 0;
 unsigned long wifiConnectStart = 0;
 bool wifiConnecting = false;
 bool ledState = false;
 
 uint8_t i2cFailCount = 0;
 const char* lastResetReason = "UNKNOWN";
-#define I2C_FAIL_THRESHOLD 10
+#define I2C_FAIL_THRESHOLD 5   // Faster recovery (was 10)
 
 void handleLed(unsigned long now) {
     if (now - lastLedToggle >= LED_TOGGLE_INTERVAL_MS) {
@@ -64,7 +68,7 @@ void handleLed(unsigned long now) {
 }
 
 void recoverI2C() {
-    Serial.println("[I2C] Tentando recuperacao do barramento...");
+    Serial.println("[I2C] Recuperando barramento...");
     Wire.end();
     pinMode(SDA_PIN, INPUT_PULLUP);
     pinMode(SCL_PIN, OUTPUT);
@@ -82,6 +86,7 @@ void recoverI2C() {
     digitalWrite(SDA_PIN, HIGH);
     delayMicroseconds(5);
     Wire.begin(SDA_PIN, SCL_PIN);
+    Wire.setTimeout(I2C_TIMEOUT_MS);
     Serial.println("[I2C] Barramento reiniciado.");
 }
 
@@ -151,8 +156,6 @@ void publishData(const char* measurement, float value) {
 void readAndPublish() {
     bool i2cFail = false;
 
-    Serial.println("[READ] Lendo SCD41...");
-
     if (scd41_ok) {
         bool dataReady = false;
         uint16_t err = scd41.getDataReadyFlag(dataReady);
@@ -208,7 +211,8 @@ void setup() {
     uint32_t bootCount = prefs.getUInt("boots", 0) + 1;
     prefs.putUInt("boots", bootCount);
 
-    // Track reset reasons
+    uint32_t lastUptime = prefs.getUInt("uptime", 0);
+
     uint32_t wdtCount = prefs.getUInt("wdt", 0);
     uint32_t brownoutCount = prefs.getUInt("brownout", 0);
     uint32_t panicCount = prefs.getUInt("panic", 0);
@@ -226,46 +230,84 @@ void setup() {
     prefs.end();
 
     Serial.println("\n==============================");
-    Serial.println("  IoT Air Quality Node v4.1");
+    Serial.println("  IoT Air Quality Node v4.2");
     Serial.println("==============================");
     Serial.printf("[BOOT] Count: %u\n", bootCount);
     Serial.printf("[BOOT] Reset reason: %s (%d)\n", getResetReasonStr(resetReason), resetReason);
+    Serial.printf("[BOOT] Last uptime before reset: %us (%uh %um)\n", lastUptime, lastUptime / 3600, (lastUptime % 3600) / 60);
     Serial.printf("[BOOT] History — WDT: %u | Brownout: %u | Panic: %u\n\n", wdtCount, brownoutCount, panicCount);
 
+    // LED heartbeat
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
 
+    // Watchdog — tighter at 15s
     esp_task_wdt_init(WDT_TIMEOUT_S, true);
     esp_task_wdt_add(NULL);
-    Serial.printf("[WDT] Watchdog configurado: %ds\n", WDT_TIMEOUT_S);
+    Serial.printf("[WDT] Watchdog: %ds\n", WDT_TIMEOUT_S);
 
+    // I2C with timeout
     Wire.begin(SDA_PIN, SCL_PIN);
+    Wire.setTimeout(I2C_TIMEOUT_MS);
+    Serial.printf("[I2C] Timeout: %dms\n", I2C_TIMEOUT_MS);
+
     initSensor();
     startWiFiConnect();
     client.setServer(MQTT_SERVER, MQTT_PORT);
 
+    Serial.printf("[AUTO] Restart preventivo a cada %dh\n", AUTO_RESTART_HOURS);
     Serial.println("[SETUP] Inicializacao completa.\n");
 }
 
 void loop() {
     unsigned long now = millis();
 
+    // Feed watchdog
     esp_task_wdt_reset();
+
+    // LED heartbeat
     handleLed(now);
+
+    // WiFi (non-blocking)
     handleWiFi();
+
+    // MQTT (non-blocking)
     handleMQTT();
 
+    // Sensor read every 5s (matches SCD41 measurement cycle)
     if (now - lastSensorRead >= SENSOR_READ_INTERVAL_MS) {
         lastSensorRead = now;
         readAndPublish();
     }
 
+    // I2C recovery
     if (i2cFailCount >= I2C_FAIL_THRESHOLD) {
-        Serial.println("[I2C] Muitas falhas consecutivas — recuperando...");
+        Serial.println("[I2C] Muitas falhas — recuperando...");
         recoverI2C();
         initSensor();
     }
 
+    // Save uptime to NVS every minute
+    if (now - lastUptimeSave >= UPTIME_SAVE_INTERVAL_MS) {
+        lastUptimeSave = now;
+        Preferences prefs;
+        prefs.begin("diag", false);
+        prefs.putUInt("uptime", now / 1000);
+        prefs.end();
+    }
+
+    // Preventive auto-restart every 24h
+    if (now / 1000 >= AUTO_RESTART_HOURS * 3600UL) {
+        Serial.println("[AUTO] Restart preventivo — 24h de uptime atingido.");
+        Preferences prefs;
+        prefs.begin("diag", false);
+        prefs.putUInt("uptime", now / 1000);
+        prefs.end();
+        delay(100);
+        ESP.restart();
+    }
+
+    // Status line
     if (now - lastWiFiStatus >= WIFI_STATUS_INTERVAL_MS) {
         lastWiFiStatus = now;
         Serial.printf("[STATUS] WiFi=%s | MQTT=%s | SCD41=%d | Heap=%u | Uptime=%lus | LastReset=%s\n",
