@@ -16,12 +16,13 @@
 #define MQTT_SERVER "192.168.100.224"
 #define MQTT_PORT 1883
 
-// Definindo pinos I2C para o LOLIN S2 Mini
-#define SDA_PIN 37
-#define SCL_PIN 39
+// Definindo pinos I2C para o ESP32-C3-DevKitM-1
+// GPIO8 is RGB LED, GPIO9 is boot strapping — avoid both for I2C
+#define SDA_PIN 4
+#define SCL_PIN 6
 
-// LED built-in
-#define LED_PIN 15
+// LED RGB (WS2812) on GPIO8
+#define LED_RGB_PIN 8
 
 // Timeouts e intervalos
 #define WIFI_CONNECT_TIMEOUT_MS   15000
@@ -63,7 +64,12 @@ void handleLed(unsigned long now) {
     if (now - lastLedToggle >= LED_TOGGLE_INTERVAL_MS) {
         lastLedToggle = now;
         ledState = !ledState;
-        digitalWrite(LED_PIN, ledState);
+        // WS2812 RGB LED: dim teal when on, off when off
+        if (ledState) {
+            neopixelWrite(LED_RGB_PIN, 0, 10, 8); // dim teal (R=0, G=10, B=8)
+        } else {
+            neopixelWrite(LED_RGB_PIN, 0, 0, 0);
+        }
     }
 }
 
@@ -230,26 +236,27 @@ void setup() {
     prefs.end();
 
     Serial.println("\n==============================");
-    Serial.println("  IoT Air Quality Node v4.2");
+    Serial.println("  IoT Air Quality Node v5.0");
     Serial.println("==============================");
     Serial.printf("[BOOT] Count: %u\n", bootCount);
     Serial.printf("[BOOT] Reset reason: %s (%d)\n", getResetReasonStr(resetReason), resetReason);
     Serial.printf("[BOOT] Last uptime before reset: %us (%uh %um)\n", lastUptime, lastUptime / 3600, (lastUptime % 3600) / 60);
     Serial.printf("[BOOT] History — WDT: %u | Brownout: %u | Panic: %u\n\n", wdtCount, brownoutCount, panicCount);
 
-    // LED heartbeat
-    pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, LOW);
+    // LED heartbeat (RGB WS2812 on GPIO8)
+    neopixelWrite(LED_RGB_PIN, 0, 0, 0);
 
     // Watchdog — tighter at 15s
     esp_task_wdt_init(WDT_TIMEOUT_S, true);
     esp_task_wdt_add(NULL);
     Serial.printf("[WDT] Watchdog: %ds\n", WDT_TIMEOUT_S);
 
-    // I2C with timeout
+    // I2C with timeout and internal pull-ups
+    pinMode(SDA_PIN, INPUT_PULLUP);
+    pinMode(SCL_PIN, INPUT_PULLUP);
     Wire.begin(SDA_PIN, SCL_PIN);
     Wire.setTimeout(I2C_TIMEOUT_MS);
-    Serial.printf("[I2C] Timeout: %dms\n", I2C_TIMEOUT_MS);
+    Serial.printf("[I2C] Timeout: %dms, SDA=%d, SCL=%d\n", I2C_TIMEOUT_MS, SDA_PIN, SCL_PIN);
 
     initSensor();
     startWiFiConnect();
