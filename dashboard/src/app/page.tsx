@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import KpiGrid from "@/components/KpiGrid";
 import SettingsPanel from "@/components/Settings";
 import { useMqtt } from "@/lib/mqtt";
+import type { TrendResult } from "@/lib/types";
 import { getRangeConfig, DEFAULT_RANGE } from "@/config/ranges";
 import {
   CHART_TOOLTIP_STYLE, CHART_GRID_PROPS, CHART_AXIS_TICK,
@@ -104,6 +105,22 @@ export default function Home() {
   const [historical, setHistorical] = useState<SensorData | null>(null);
   const [loading, setLoading] = useState(true);
   const { values, connected, lastMessage } = useMqtt();
+  const [trends, setTrends] = useState<Record<string, TrendResult>>({});
+
+  // Fetch trends from API
+  const fetchTrends = useCallback(async () => {
+    try {
+      const res = await fetch("/api/trend");
+      if (res.ok) setTrends(await res.json());
+    } catch {}
+  }, []);
+
+  // Fetch trends on mount and every 10s
+  useEffect(() => {
+    fetchTrends();
+    const interval = setInterval(fetchTrends, 10000);
+    return () => clearInterval(interval);
+  }, [fetchTrends]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -132,7 +149,7 @@ export default function Home() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
       <Header connected={connected} lastMessage={lastMessage} range={range} onRangeChange={setRange} />
-      <KpiGrid values={values} />
+      <KpiGrid values={values} trends={trends} />
       <div className="space-y-4">
         {loading && !historical ? (
           <div className="card p-8 text-center">

@@ -4,6 +4,7 @@ import StaggerChildren, { StaggerItem } from "@/components/animation/StaggerChil
 import KpiCard from "@/components/KpiCard";
 import { SENSOR_METRICS, KPI_METRICS } from "@/config/sensors";
 import type { RealtimeValues } from "@/lib/types";
+import type { TrendResult } from "@/lib/types";
 
 const ICON_COLORS: Record<string, string> = {
   co2: "#2eccc0",
@@ -13,9 +14,10 @@ const ICON_COLORS: Record<string, string> = {
 
 interface KpiGridProps {
   values: RealtimeValues;
+  trends: Record<string, TrendResult>;
 }
 
-export default function KpiGrid({ values }: KpiGridProps) {
+export default function KpiGrid({ values, trends }: KpiGridProps) {
   return (
     <StaggerChildren stagger={0.04} className="grid grid-cols-3 gap-3">
       {KPI_METRICS.map((measurement) => {
@@ -33,6 +35,7 @@ export default function KpiGrid({ values }: KpiGridProps) {
               unit={metric.unit}
               measurement={measurement}
               iconColor={iconColor}
+              trend={trends[measurement]}
             />
           </StaggerItem>
         );

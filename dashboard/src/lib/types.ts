@@ -1,3 +1,10 @@
+export type TrendDirection = "up" | "down" | "stable" | null;
+
+export interface TrendResult {
+  direction: TrendDirection;
+  delta: number;
+}
+
 export interface Reading {
   timestamp: number;
   value: number;

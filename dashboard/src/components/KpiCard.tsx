@@ -3,8 +3,10 @@
 import MaterialIcon from "@/components/MaterialIcon";
 import CountUp from "@/components/animation/CountUp";
 import StatusBadge from "@/components/StatusBadge";
+import TrendIndicator from "@/components/TrendIndicator";
 import Co2ScaleInfo from "@/components/Co2ScaleInfo";
 import { getThreshold } from "@/lib/thresholds";
+import type { TrendResult } from "@/lib/types";
 
 interface KpiCardProps {
   iconName: string;
@@ -13,6 +15,7 @@ interface KpiCardProps {
   unit: string;
   measurement: string;
   iconColor: string;
+  trend?: TrendResult;
 }
 
 export default function KpiCard({
@@ -22,6 +25,7 @@ export default function KpiCard({
   unit,
   measurement,
   iconColor,
+  trend,
 }: KpiCardProps) {
   const threshold = value !== null ? getThreshold(measurement, value) : null;
   const needsDecimal = measurement === "temp" || measurement === "umi";
@@ -74,11 +78,21 @@ export default function KpiCard({
         )}
       </div>
 
-      {/* Badge */}
-      <div className="mt-3 min-h-[22px]">
-        {threshold && threshold.label ? (
-          <StatusBadge level={threshold.level} label={threshold.label} />
-        ) : null}
+      {/* Badge + Trend */}
+      <div className="mt-3 flex items-center justify-between">
+        <div className="min-h-[22px]">
+          {threshold && threshold.label ? (
+            <StatusBadge level={threshold.level} label={threshold.label} />
+          ) : null}
+        </div>
+        {trend && (
+          <TrendIndicator
+            direction={trend.direction}
+            delta={trend.delta}
+            measurement={measurement}
+            unit={measurement === "co2" ? "" : measurement === "temp" ? "°" : "%"}
+          />
+        )}
       </div>
     </div>
   );

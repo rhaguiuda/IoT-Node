@@ -86,12 +86,26 @@ The upload and monitor ports are configured in `platformio.ini` for the Lolin S2
 
 ## Dashboard
 
-Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators (CO2, Temperature, Humidity) and historical charts. Icons from Google Material Symbols.
+Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators, trend arrows, and historical charts. Icons from Google Material Symbols.
 
 ### Status indicators
 
 - **Sensor Online/Offline** — green if MQTT data received in the last 30 seconds, red otherwise
 - **Broker** — green if WebSocket connection to EMQX is active, red if disconnected
+
+### Trend indicators
+
+Each KPI card shows a trend arrow (↑ ↓ —) comparing the average of the last 2 minutes vs the previous 2 minutes. Calculated server-side from SQLite, available immediately on page load.
+
+| Metric | Deadband | Color (up) | Color (down) |
+|---|---|---|---|
+| CO₂ | < 5 ppm | Red (worsening) | Green (improving) |
+| Temperature | < 0.3°C | Neutral | Neutral |
+| Humidity | < 1.0% | Neutral | Neutral |
+
+- **Minimum data:** 5 readings per window (~25s) before showing trend
+- **Update frequency:** every 10 seconds via `GET /api/trend`
+- **Null-safe:** ignores periods with insufficient data
 
 ### Run locally
 
@@ -187,7 +201,10 @@ Native Swift app that shows real-time CO₂, temperature, and humidity in the ma
 
 ### What it shows
 
-**Menu bar:** `1143ppm  29.5°  45%` — all three values updated in real-time (~5s).
+**Menu bar:** `1143ppm  29.5°  45%` — all three values updated in real-time (~5s). CO₂ value is color-coded:
+- **Normal** (< 1000 ppm) — system default color
+- **Yellow** (1000–1500 ppm) — elevated
+- **Red** (> 1500 ppm) — high
 
 **Popover (click):** expanded view with metric rows, color-coded status indicators, last update timestamp, and a link to open the web dashboard.
 
