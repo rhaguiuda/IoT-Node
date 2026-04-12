@@ -5,6 +5,7 @@ import ThemeInit from "@/components/ThemeInit";
 export const metadata: Metadata = {
   title: "Air Quality Node",
   description: "Indoor air quality monitoring dashboard",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
