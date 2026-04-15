@@ -58,7 +58,7 @@ struct MenuBarLabel: View {
 
     private func co2Color(_ value: Double) -> NSColor {
         if value >= 1500 { return NSColor.systemRed }
-        if value >= 1000 { return NSColor.systemYellow }
+        if value >= 1000 { return NSColor.systemOrange }
         return NSColor.labelColor
     }
 }
