@@ -1,5 +1,13 @@
 # Air Quality Dashboard Implementation Plan
 
+> **⚠️ HISTORICAL DOCUMENT — STATUS UPDATE 2026-04-15**
+>
+> This plan originally targeted a multi-sensor node (SCD41 + SHT4x + ENS160 + BH1750) reporting CO₂, temperature, humidity, TVOC, AQI, eCO₂ and Lux.
+>
+> **The extra sensors (SHT4x, ENS160, BH1750) were removed from the hardware** because they were unreliable in testing. The shipped system has only the **Sensirion SCD41**, reporting **CO₂, temperature and humidity**.
+>
+> Any references in this plan to SHT4x, ENS160, BH1750, TVOC, AQI, eCO₂ or Lux are obsolete and should be ignored. The canonical description of the current system lives in `README.md` and `docs/superpowers/specs/2026-04-10-air-quality-dashboard-design.md`. This file is kept as a record of the original implementation path.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a single-page real-time air quality dashboard with historical data, 14 themes, and Pushover alerts.

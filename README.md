@@ -88,6 +88,14 @@ The upload and monitor ports are configured in `platformio.ini` for the Lolin S2
 
 Real-time web dashboard built with Next.js 16, Recharts, and 14 selectable themes. Shows KPI cards with threshold indicators, trend arrows, and historical charts. Icons from Google Material Symbols.
 
+### Chart interactions
+
+Each of the three charts (CO₂, temperature, humidity) supports:
+
+- **Scroll to zoom** — mouse wheel over a chart zooms in/out on the time axis, anchored at the cursor position. Zooming out fully clears the zoom automatically.
+- **Reset zoom button** — appears in the card header when a zoom is active; clears the zoom on click. Zoom also resets automatically when the range preset changes.
+- **Min / Avg / Max** — shown under each chart's title, computed over the visible interval. Updates live as you zoom.
+
 ### Status indicators
 
 - **Sensor Online/Offline** — green if MQTT data received in the last 30 seconds, red otherwise

@@ -6,6 +6,8 @@ Single page web dashboard for indoor air quality monitoring. Displays real-time 
 
 **Project location:** `IoT-Node/dashboard/`
 
+> **Note (2026-04-15):** The original design mentioned additional sensors (SHT4x, ENS160, BH1750) providing TVOC, AQI, eCO₂ and Lux. These were removed from the hardware because they were unreliable in testing. The only sensor currently in the node is the **Sensirion SCD41**, which reports **CO₂, temperature and humidity**. This spec reflects the simplified, shipped version.
+
 ## Tech Stack
 
 | Component | Technology |
@@ -56,29 +58,21 @@ Single page web dashboard for indoor air quality monitoring. Displays real-time 
 │  Range presets: [6h] [24h] [7d] [30d]           │
 │  Theme picker dropdown (grouped dark/light)      │
 ├─────────────────────────────────────────────────┤
-│  KPI Cards — grid 3×2                            │
+│  KPI Cards — grid 3×1                            │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐        │
 │  │ CO₂      │ │ Temp     │ │ Umidade  │        │
-│  │ SCD41    │ │ SHT4x    │ │ SHT4x   │        │
-│  └──────────┘ └──────────┘ └──────────┘        │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │ TVOC     │ │ AQI      │ │ Lux      │        │
-│  │ ENS160   │ │ ENS160   │ │ BH1750   │        │
+│  │ SCD41    │ │ SCD41    │ │ SCD41    │        │
 │  └──────────┘ └──────────┘ └──────────┘        │
 ├─────────────────────────────────────────────────┤
 │  Chart 1: CO₂ (full width)                      │
-│  SCD41 solid line + ENS160 dashed line           │
+│  SCD41 CO₂ area chart                            │
 │  Reference line at threshold (danger zone)       │
 ├─────────────────────────────────────────────────┤
-│  Chart 2: Temperatura & Umidade (full width)     │
-│  SHT4x temp vs SCD41 temp + umidade overlay      │
-│  Dual Y axis (°C left, % right)                  │
+│  Chart 2: Temperatura (full width)               │
+│  SCD41 temperature area chart                    │
 ├─────────────────────────────────────────────────┤
-│  Chart 3: TVOC & Qualidade do Ar (full width)   │
-│  TVOC area chart + AQI overlay                   │
-├─────────────────────────────────────────────────┤
-│  Chart 4: Luminosidade (full width)              │
-│  Lux area chart                                  │
+│  Chart 3: Umidade (full width)                   │
+│  SCD41 humidity area chart                       │
 ├─────────────────────────────────────────────────┤
 │  Settings (collapsible section)                  │
 │  CO₂ threshold, offline timeout, Pushover keys   │
@@ -104,9 +98,6 @@ Each card follows the FitBark KpiCard pattern:
 | CO₂ (ppm) | < 800 | 800–1000 | > 1000 |
 | Temperature (°C) | 18–26 | 15–18 or 26–30 | < 15 or > 30 |
 | Humidity (%) | 40–60 | 30–40 or 60–70 | < 30 or > 70 |
-| TVOC (ppb) | < 250 | 250–2000 | > 2000 |
-| AQI | 1–2 | 3 | 4–5 |
-| Lux | Always neutral (info blue) | — | — |
 
 ## Charts (Recharts)
 
@@ -123,28 +114,29 @@ All charts follow FitBark Console chart standards:
 
 ### Chart 1: CO₂
 
-- SCD41 (real CO₂): solid line, `var(--accent)`, strokeWidth 2, area fill with gradient
-- ENS160 (estimated eCO₂): dashed line, `var(--warning)`, strokeWidth 1.5, no fill
+- SCD41 CO₂: solid line, `var(--accent)`, strokeWidth 2, area fill with gradient
 - Reference line at CO₂ threshold (configurable, default 1000 ppm): dashed, `var(--danger)`, 50% opacity
-- Legend: "SCD41 (real)" + "ENS160 (estimado)"
 
-### Chart 2: Temperature & Humidity
+### Chart 2: Temperature
 
-- Dual Y axis: °C on left, % on right
-- SHT4x temperature: solid green (`var(--success)`), strokeWidth 2
-- SCD41 temperature: dashed blue (`var(--info)`), strokeWidth 1.5
-- SHT4x humidity: solid purple (`#a78bfa`), strokeWidth 2
-- SCD41 humidity: dashed pink (`#f472b6`), strokeWidth 1.5
-- Legend with all 4 series
+- SCD41 temperature: solid line, `var(--warning)`, strokeWidth 2, area fill with gradient
+- Single Y axis (°C)
 
-### Chart 3: TVOC & Air Quality
+### Chart 3: Humidity
 
-- TVOC: area chart, `var(--warning)`, gradient fill
-- AQI: step line or bar overlay (1-5 scale), colored by level
+- SCD41 humidity: solid line, `var(--info)`, strokeWidth 2, area fill with gradient
+- Single Y axis (%)
 
-### Chart 4: Luminosity
+### Chart interactions (applies to all three charts)
 
-- Lux: area chart, `var(--info)`, gradient fill
+All three charts share interactive controls implemented directly in the `SimpleChart` component:
+
+- **Scroll zoom on X axis.** Mouse wheel zooms in (scroll up) or out (scroll down) on the time axis, anchored at the cursor position so the timestamp under the mouse remains fixed during the zoom. Factor 0.8× per scroll-in tick, 1.25× per scroll-out tick. Clamped to a minimum visible span of 5 seconds.
+- **Absolute-timestamp domain.** Zoom state is stored as `[startTs, endTs]` in absolute Unix seconds, so incoming real-time data does not disturb the framing. The Y axis auto-fits because data is filtered to the visible window before Recharts renders it.
+- **Reset-zoom button.** Rendered in the card header (top-right, next to the unit label) only when zoom is active. Styled with `--bg-elevated` / `--border` / `--text-secondary` so it follows the active theme. Clears zoom on click.
+- **Auto reset on range change.** When the user selects a different range preset (e.g. 6h → 24h), the zoom state clears. When zoomed fully out by scroll, the zoom state also clears so the chart returns to a sliding-window view.
+- **Page-scroll suppression.** Wheel events on the chart are registered with `{ passive: false }` via a direct `addEventListener` (React's `onWheel` cannot reliably `preventDefault` in modern browsers) so scrolling over a chart does not scroll the page.
+- **Min / Avg / Max line.** Shown as an 11 px subtitle under the chart title, in `--text-tertiary` (labels) + `--text-secondary` (values), tabular-nums. Computed from the currently visible points (respects zoom), using the same decimal formatting as the chart's Y axis. Hidden when there is no data.
 
 ## Range Presets
 
@@ -259,6 +251,8 @@ CREATE TABLE settings (
 );
 ```
 
+Only rows with `sensor = 'scd41'` and `measurement IN ('co2', 'temp', 'umi')` are written. The `sensor` column is retained for schema flexibility but currently has a single value.
+
 ### Default settings
 
 | Key | Default | Description |
@@ -284,28 +278,20 @@ SQLite opened with `PRAGMA journal_mode=WAL` for concurrent read (API Routes) + 
 | Endpoint | Method | Description |
 |---|---|---|
 | `/api/telemetry?range=6h` | GET | Readings downsampled per range |
-| `/api/telemetry?range=24h` | GET | Grouped by 5 min |
-| `/api/telemetry?range=7d` | GET | Grouped by 30 min |
-| `/api/telemetry?range=30d` | GET | Grouped by 2h |
+| `/api/telemetry?range=24h` | GET | Grouped by 10 s |
+| `/api/telemetry?range=7d` | GET | Grouped by 1 min |
+| `/api/telemetry?range=30d` | GET | Grouped by 5 min |
 | `/api/settings` | GET | All settings as JSON object |
 | `/api/settings` | PUT | Update settings (partial, merge) |
+| `/api/trend` | GET | Last-2min vs previous-2min averages per metric |
 
 ### Telemetry response format
 
 ```json
 {
-  "scd41": {
-    "co2": [{ "timestamp": 1712700000, "value": 1231.5 }, ...],
-    "temp": [...],
-    "umi": [...]
-  },
-  "ens160": {
-    "eco2": [...],
-    "tvoc": [...],
-    "airq": [...]
-  },
-  "sht4x": { "temp": [...], "umi": [...] },
-  "bh1750": { "lux": [...] }
+  "co2":  [{ "timestamp": 1712700000, "value": 1231.5 }, ...],
+  "temp": [{ "timestamp": 1712700000, "value": 24.3   }, ...],
+  "umi":  [{ "timestamp": 1712700000, "value": 52.1   }, ...]
 }
 ```
 
@@ -322,12 +308,11 @@ IoT-Node/
 │   │   ├── app/
 │   │   │   ├── layout.tsx        ← fonts, providers, theme
 │   │   │   ├── globals.css       ← 14 themes CSS tokens
-│   │   │   ├── page.tsx          ← single page dashboard
+│   │   │   ├── page.tsx          ← single page dashboard (3 SimpleChart instances)
 │   │   │   └── api/
-│   │   │       ├── telemetry/
-│   │   │       │   └── route.ts  ← GET readings with downsampling
-│   │   │       └── settings/
-│   │   │           └── route.ts  ← GET/PUT settings
+│   │   │       ├── telemetry/route.ts  ← GET readings with downsampling
+│   │   │       ├── settings/route.ts   ← GET/PUT settings
+│   │   │       └── trend/route.ts      ← GET per-metric trend
 │   │   ├── components/
 │   │   │   ├── Header.tsx
 │   │   │   ├── KpiCard.tsx
@@ -340,10 +325,7 @@ IoT-Node/
 │   │   │   │   ├── StaggerChildren.tsx
 │   │   │   │   └── CountUp.tsx
 │   │   │   └── charts/
-│   │   │       ├── Co2Chart.tsx
-│   │   │       ├── TempHumChart.tsx
-│   │   │       ├── TvocChart.tsx
-│   │   │       └── LuxChart.tsx
+│   │   │       └── ChartTooltip.tsx   ← shared chart style tokens & formatters
 │   │   ├── lib/
 │   │   │   ├── mqtt.ts           ← useMqtt() hook
 │   │   │   ├── db.ts             ← better-sqlite3 queries
@@ -351,8 +333,9 @@ IoT-Node/
 │   │   │   └── types.ts
 │   │   └── config/
 │   │       ├── sensors.ts        ← sensor definitions, topics, units
+│   │       ├── ranges.ts         ← range preset config
 │   │       └── themes.ts         ← theme metadata (id, label, group)
-│   ├── collector.ts              ← MQTT → SQLite + Pushover alerts
+│   ├── collector/                ← MQTT → SQLite + Pushover alerts
 │   ├── package.json
 │   ├── Dockerfile                ← multi-stage Alpine build
 │   ├── docker-compose.yml
@@ -361,6 +344,8 @@ IoT-Node/
 │   └── superpowers/specs/        ← this spec
 └── README.md
 ```
+
+The three charts are rendered by a single `SimpleChart` component used three times (for `co2`, `temp`, `umi`) directly in `page.tsx`, rather than separate `Co2Chart`/`TempChart`/`HumidityChart` components.
 
 ## Docker Deployment
 
