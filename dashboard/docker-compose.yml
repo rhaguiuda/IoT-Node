@@ -8,7 +8,7 @@ services:
     ports:
       - "3100:3000"
     volumes:
-      - ../data:/app/data
+      - ./data:/app/data
     environment:
       - DB_PATH=/app/data/iotnode.db
     restart: unless-stopped
@@ -18,7 +18,7 @@ services:
     build: .
     command: node dist/index.js
     volumes:
-      - ../data:/app/data
+      - ./data:/app/data
     environment:
       - DB_PATH=/app/data/iotnode.db
       - MQTT_URL=mqtt://192.168.100.224:1883

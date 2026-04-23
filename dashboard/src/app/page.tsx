@@ -44,6 +44,21 @@ const SimpleChart = memo(function SimpleChart({
 
   // Zoom state — domain in absolute timestamps, or null when fully zoomed out
   const [zoomDomain, setZoomDomain] = useState<[number, number] | null>(null);
+  // Y-axis scale mode: "abs" starts at 0, "rel" fits to visible data.
+  // Persisted per chart in localStorage, keyed by chart title.
+  const [scaleMode, setScaleMode] = useState<"abs" | "rel">("abs");
+  const scaleStorageKey = `chart-scale:${title}`;
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(scaleStorageKey);
+      if (saved === "abs" || saved === "rel") setScaleMode(saved);
+    } catch {}
+  }, [scaleStorageKey]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(scaleStorageKey, scaleMode);
+    } catch {}
+  }, [scaleStorageKey, scaleMode]);
   const chartWrapperRef = useRef<HTMLDivElement>(null);
 
   // Reset zoom whenever the selected range preset changes
@@ -151,6 +166,30 @@ const SimpleChart = memo(function SimpleChart({
               Reset zoom
             </button>
           )}
+          <div
+            className="flex rounded-md overflow-hidden"
+            style={{ border: "1px solid var(--border)" }}
+            title="Escala do eixo Y: absoluta (inicia em 0) ou relativa (ajusta aos dados)"
+          >
+            {(["abs", "rel"] as const).map((mode, i) => {
+              const active = scaleMode === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setScaleMode(mode)}
+                  className="text-[11px] font-medium px-2 py-1 transition-colors cursor-pointer"
+                  style={{
+                    color: active ? "var(--accent-strong)" : "var(--text-secondary)",
+                    background: active ? "var(--pill-active-bg)" : "var(--bg-elevated)",
+                    borderLeft: i === 0 ? "none" : "1px solid var(--border)",
+                  }}
+                >
+                  {mode === "abs" ? "Abs" : "Rel"}
+                </button>
+              );
+            })}
+          </div>
           <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>{unit}</span>
         </div>
       </div>
@@ -181,6 +220,7 @@ const SimpleChart = memo(function SimpleChart({
               axisLine={false}
               tickLine={false}
               width={50}
+              domain={scaleMode === "rel" ? ["auto", "auto"] : [0, "auto"]}
             />
             {thresholdValue && (
               <line x1="0" y1={thresholdValue} x2="100%" y2={thresholdValue} />
