@@ -30,7 +30,8 @@
 #define MQTT_RETRY_INTERVAL_MS    5000
 #define SENSOR_READ_INTERVAL_MS   5000   // SCD41 updates every ~5s, no point polling faster
 #define WIFI_STATUS_INTERVAL_MS   10000
-#define LED_TOGGLE_INTERVAL_MS    500
+#define LED_FLASH_ON_MS           50     // duracao do flash do LED (aceso)
+#define LED_FLASH_PERIOD_MS       5000   // intervalo entre flashes (flash-a-flash)
 #define UPTIME_SAVE_INTERVAL_MS   60000
 #define WDT_TIMEOUT_S             15     // Tighter watchdog (was 30s)
 #define I2C_TIMEOUT_MS            1000   // I2C transaction timeout
@@ -79,14 +80,19 @@ const char* lastResetReason = "UNKNOWN";
 #define I2C_FAIL_THRESHOLD 5   // Faster recovery (was 10)
 
 void handleLed(unsigned long now) {
-    if (now - lastLedToggle >= LED_TOGGLE_INTERVAL_MS) {
-        lastLedToggle = now;
-        ledState = !ledState;
-        // WS2812 RGB LED: dim teal when on, off when off
-        if (ledState) {
-            neopixelWrite(LED_RGB_PIN, 0, 10, 8); // dim teal (R=0, G=10, B=8)
-        } else {
+    // WS2812 RGB LED: flash vermelho curto (100ms) a cada 2s.
+    // Aceso por LED_FLASH_ON_MS, apagado pelo resto do periodo.
+    if (ledState) {
+        if (now - lastLedToggle >= LED_FLASH_ON_MS) {
+            lastLedToggle = now;
+            ledState = false;
             neopixelWrite(LED_RGB_PIN, 0, 0, 0);
+        }
+    } else {
+        if (now - lastLedToggle >= LED_FLASH_PERIOD_MS - LED_FLASH_ON_MS) {
+            lastLedToggle = now;
+            ledState = true;
+            neopixelWrite(LED_RGB_PIN, 30, 0, 0); // dim red (R=30, G=0, B=0)
         }
     }
 }

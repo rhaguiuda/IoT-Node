@@ -10,8 +10,25 @@ interface DeviceSelectorProps {
 }
 
 export default function DeviceSelector({ devices, value, onChange }: DeviceSelectorProps) {
-  // Hide the selector entirely until there is more than one device to choose from.
-  if (devices.length <= 1) return null;
+  // Nothing to show before any device has reported.
+  if (devices.length === 0) return null;
+
+  const selected = devices.find((d) => d.device_id === value) ?? devices[0];
+
+  // Single device: show its name as a static label (no dropdown to pick from).
+  if (devices.length === 1) {
+    return (
+      <div
+        className="inline-flex items-center gap-1.5 rounded-lg pl-2.5 pr-3 py-1.5"
+        style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)" }}
+      >
+        <MaterialIcon name="sensors" size={16} color="var(--text-tertiary)" />
+        <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+          {selected.name}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div
