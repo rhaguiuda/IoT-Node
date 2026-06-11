@@ -7,6 +7,10 @@ const MEASUREMENTS = ["co2", "temp", "umi"];
 
 export async function GET(request: NextRequest) {
   const rangeId = (request.nextUrl.searchParams.get("range") || "1h") as RangeId;
+  const device = request.nextUrl.searchParams.get("device");
+  if (!device) {
+    return NextResponse.json({ error: "Missing device" }, { status: 400 });
+  }
   const rangeConfig = RANGES.find((r) => r.id === rangeId);
   if (!rangeConfig) {
     return NextResponse.json({ error: "Invalid range" }, { status: 400 });
@@ -14,7 +18,7 @@ export async function GET(request: NextRequest) {
   const fromTimestamp = Math.floor(Date.now() / 1000) - rangeConfig.seconds;
   const result: Record<string, { timestamp: number; value: number }[]> = {};
   for (const measurement of MEASUREMENTS) {
-    result[measurement] = queryReadings(measurement, fromTimestamp, rangeConfig.downsampleSec);
+    result[measurement] = queryReadings(device, measurement, fromTimestamp, rangeConfig.downsampleSec);
   }
   return NextResponse.json(result);
 }

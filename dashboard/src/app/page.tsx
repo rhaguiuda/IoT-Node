@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import KpiGrid from "@/components/KpiGrid";
 import SettingsPanel from "@/components/Settings";
 import { useMqtt } from "@/lib/mqtt";
-import type { TrendResult } from "@/lib/types";
+import type { TrendResult, Device } from "@/lib/types";
 import { getRangeConfig, DEFAULT_RANGE } from "@/config/ranges";
 import {
   CHART_TOOLTIP_STYLE, CHART_GRID_PROPS, CHART_AXIS_TICK,
@@ -247,20 +247,54 @@ const SimpleChart = memo(function SimpleChart({
   );
 });
 
+const SELECTED_DEVICE_KEY = "selected-device";
+
 export default function Home() {
   const [range, setRange] = useState<RangeId>(DEFAULT_RANGE);
   const [historical, setHistorical] = useState<SensorData | null>(null);
   const [loading, setLoading] = useState(true);
-  const { values, connected, lastMessage } = useMqtt();
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+  const { values, connected, lastMessage } = useMqtt(selectedDevice);
   const [trends, setTrends] = useState<Record<string, TrendResult>>({});
+
+  // Fetch the device list on mount and every 30s (picks up newly seen nodes).
+  // The selected device comes from localStorage when still present, else the
+  // first device. A stale stored id (device gone) falls back to the first.
+  const fetchDevices = useCallback(async () => {
+    try {
+      const res = await fetch("/api/devices");
+      if (!res.ok) return;
+      const list: Device[] = await res.json();
+      setDevices(list);
+      setSelectedDevice((prev) => {
+        if (prev && list.some((d) => d.device_id === prev)) return prev;
+        const stored = (() => { try { return localStorage.getItem(SELECTED_DEVICE_KEY); } catch { return null; } })();
+        if (stored && list.some((d) => d.device_id === stored)) return stored;
+        return list[0]?.device_id ?? null;
+      });
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    fetchDevices();
+    const interval = setInterval(fetchDevices, 30000);
+    return () => clearInterval(interval);
+  }, [fetchDevices]);
+
+  const handleDeviceChange = useCallback((deviceId: string) => {
+    setSelectedDevice(deviceId);
+    try { localStorage.setItem(SELECTED_DEVICE_KEY, deviceId); } catch {}
+  }, []);
 
   // Fetch trends from API
   const fetchTrends = useCallback(async () => {
+    if (!selectedDevice) return;
     try {
-      const res = await fetch("/api/trend");
+      const res = await fetch(`/api/trend?device=${encodeURIComponent(selectedDevice)}`);
       if (res.ok) setTrends(await res.json());
     } catch {}
-  }, []);
+  }, [selectedDevice]);
 
   // Fetch trends on mount and every 10s
   useEffect(() => {
@@ -270,15 +304,16 @@ export default function Home() {
   }, [fetchTrends]);
 
   const fetchData = useCallback(async () => {
+    if (!selectedDevice) return;
     try {
-      const res = await fetch(`/api/telemetry?range=${range}`);
+      const res = await fetch(`/api/telemetry?range=${range}&device=${encodeURIComponent(selectedDevice)}`);
       if (res.ok) setHistorical(await res.json());
     } catch (e) {
       console.error("Failed to fetch telemetry:", e);
     } finally {
       setLoading(false);
     }
-  }, [range]);
+  }, [range, selectedDevice]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -295,7 +330,15 @@ export default function Home() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-      <Header connected={connected} lastMessage={lastMessage} range={range} onRangeChange={setRange} />
+      <Header
+        connected={connected}
+        lastMessage={lastMessage}
+        range={range}
+        onRangeChange={setRange}
+        devices={devices}
+        selectedDevice={selectedDevice}
+        onDeviceChange={handleDeviceChange}
+      />
       <KpiGrid values={values} trends={trends} />
       <div className="space-y-4">
         {loading && !historical ? (

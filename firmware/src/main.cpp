@@ -7,6 +7,7 @@
 #include <esp_task_wdt.h>
 #include <Preferences.h>
 #include <esp_system.h>
+#include <esp_mac.h>
 
 // Configuracao da rede Wi-Fi
 #define WIFI_SSID "NHag"
@@ -29,7 +30,8 @@
 #define MQTT_RETRY_INTERVAL_MS    5000
 #define SENSOR_READ_INTERVAL_MS   5000   // SCD41 updates every ~5s, no point polling faster
 #define WIFI_STATUS_INTERVAL_MS   10000
-#define LED_TOGGLE_INTERVAL_MS    500
+#define LED_FLASH_ON_MS           50     // duracao do flash do LED (aceso)
+#define LED_FLASH_PERIOD_MS       5000   // intervalo entre flashes (flash-a-flash)
 #define UPTIME_SAVE_INTERVAL_MS   60000
 #define WDT_TIMEOUT_S             15     // Tighter watchdog (was 30s)
 #define I2C_TIMEOUT_MS            1000   // I2C transaction timeout
@@ -39,6 +41,23 @@ SensirionI2CScd4x scd41;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+
+// Identidade do device: MAC do WiFi em hex minusculo sem ':' (12 chars).
+// E o que separa um node do outro nos topicos e no client id do MQTT.
+char deviceId[13]    = "000000000000";
+char mqttClientId[32] = "iotnode";
+char wifiHostname[32] = "AirQualityNode";
+
+void buildDeviceIdentity() {
+    uint8_t mac[6];
+    esp_read_mac(mac, ESP_MAC_WIFI_STA);
+    snprintf(deviceId, sizeof(deviceId), "%02x%02x%02x%02x%02x%02x",
+             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    // Client id unico por device — dois nodes com o mesmo id se derrubam
+    // mutuamente no broker (reconnect loop). Por isso deriva do MAC.
+    snprintf(mqttClientId, sizeof(mqttClientId), "iotnode-%s", deviceId);
+    snprintf(wifiHostname, sizeof(wifiHostname), "AirQualityNode-%s", deviceId);
+}
 
 SimpleKalmanFilter kalmanCO2(3, 5, 0.5);
 SimpleKalmanFilter kalmanTemp(3, 5, 0.5);
@@ -61,14 +80,19 @@ const char* lastResetReason = "UNKNOWN";
 #define I2C_FAIL_THRESHOLD 5   // Faster recovery (was 10)
 
 void handleLed(unsigned long now) {
-    if (now - lastLedToggle >= LED_TOGGLE_INTERVAL_MS) {
-        lastLedToggle = now;
-        ledState = !ledState;
-        // WS2812 RGB LED: dim teal when on, off when off
-        if (ledState) {
-            neopixelWrite(LED_RGB_PIN, 0, 10, 8); // dim teal (R=0, G=10, B=8)
-        } else {
+    // WS2812 RGB LED: flash vermelho curto (100ms) a cada 2s.
+    // Aceso por LED_FLASH_ON_MS, apagado pelo resto do periodo.
+    if (ledState) {
+        if (now - lastLedToggle >= LED_FLASH_ON_MS) {
+            lastLedToggle = now;
+            ledState = false;
             neopixelWrite(LED_RGB_PIN, 0, 0, 0);
+        }
+    } else {
+        if (now - lastLedToggle >= LED_FLASH_PERIOD_MS - LED_FLASH_ON_MS) {
+            lastLedToggle = now;
+            ledState = true;
+            neopixelWrite(LED_RGB_PIN, 30, 0, 0); // dim red (R=30, G=0, B=0)
         }
     }
 }
@@ -109,7 +133,7 @@ void initSensor() {
 void startWiFiConnect() {
     Serial.println("[WIFI] Iniciando conexao...");
     WiFi.disconnect();
-    WiFi.setHostname("AirQualityNode");
+    WiFi.setHostname(wifiHostname);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     wifiConnectStart = millis();
     wifiConnecting = true;
@@ -142,7 +166,7 @@ void handleMQTT() {
     if (millis() - lastMqttRetry < MQTT_RETRY_INTERVAL_MS) return;
     lastMqttRetry = millis();
     Serial.print("[MQTT] Conectando...");
-    if (client.connect("AirQualityNode")) {
+    if (client.connect(mqttClientId)) {
         Serial.println(" OK!");
     } else {
         Serial.printf(" falhou (rc=%d)\n", client.state());
@@ -153,7 +177,7 @@ void publishData(const char* measurement, float value) {
     if (!client.connected()) return;
     char topic[64];
     char payload[50];
-    snprintf(topic, sizeof(topic), "teras/iotnode/1/telemetry/%s", measurement);
+    snprintf(topic, sizeof(topic), "teras/iotnode/%s/telemetry/%s", deviceId, measurement);
     snprintf(payload, sizeof(payload), "%.2f", value);
     client.publish(topic, payload);
     Serial.printf("  -> %s: %s\n", measurement, payload);
@@ -209,6 +233,10 @@ void setup() {
     Serial.begin(115200);
     delay(500);
 
+    // Identidade do device a partir do MAC — antes de WiFi/MQTT, pois define
+    // hostname, client id e o slot de device id nos topicos.
+    buildDeviceIdentity();
+
     // Boot diagnostics
     esp_reset_reason_t resetReason = esp_reset_reason();
     lastResetReason = getResetReasonStr(resetReason);
@@ -238,6 +266,7 @@ void setup() {
     Serial.println("\n==============================");
     Serial.println("  IoT Air Quality Node v5.0");
     Serial.println("==============================");
+    Serial.printf("[BOOT] Device ID: %s (client: %s)\n", deviceId, mqttClientId);
     Serial.printf("[BOOT] Count: %u\n", bootCount);
     Serial.printf("[BOOT] Reset reason: %s (%d)\n", getResetReasonStr(resetReason), resetReason);
     Serial.printf("[BOOT] Last uptime before reset: %us (%uh %um)\n", lastUptime, lastUptime / 3600, (lastUptime % 3600) / 60);

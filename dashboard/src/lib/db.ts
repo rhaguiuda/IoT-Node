@@ -19,6 +19,7 @@ interface ReadingRow {
 }
 
 export function queryReadings(
+  deviceId: string,
   measurement: string,
   fromTimestamp: number,
   downsampleSec: number
@@ -26,19 +27,19 @@ export function queryReadings(
   const d = getDb();
   if (downsampleSec === 0) {
     return d
-      .prepare("SELECT timestamp, value FROM readings WHERE measurement = ? AND timestamp >= ? ORDER BY timestamp ASC")
-      .all(measurement, fromTimestamp) as ReadingRow[];
+      .prepare("SELECT timestamp, value FROM readings WHERE device_id = ? AND measurement = ? AND timestamp >= ? ORDER BY timestamp ASC")
+      .all(deviceId, measurement, fromTimestamp) as ReadingRow[];
   }
   const bucket = Math.floor(downsampleSec);
   return d
     .prepare(`
       SELECT (timestamp / ${bucket} * ${bucket}) AS ts, ROUND(AVG(value), 2) AS value
       FROM readings
-      WHERE measurement = ? AND timestamp >= ?
+      WHERE device_id = ? AND measurement = ? AND timestamp >= ?
       GROUP BY (timestamp / ${bucket})
       ORDER BY ts ASC
     `)
-    .all(measurement, fromTimestamp)
+    .all(deviceId, measurement, fromTimestamp)
     .map((row) => {
       const r = row as { ts: number; value: number };
       return { timestamp: r.ts, value: r.value };
@@ -61,19 +62,19 @@ interface TrendRow {
 // TrendResult type is in types.ts for client import
 import type { TrendResult } from "./types";
 
-export function queryTrend(measurement: string): TrendResult {
+export function queryTrend(deviceId: string, measurement: string): TrendResult {
   const d = getDb();
   const now = Math.floor(Date.now() / 1000);
   const t1 = now - TREND_WINDOW_SEC;         // 2 min ago
   const t2 = now - TREND_WINDOW_SEC * 2;     // 4 min ago
 
   const current = d.prepare(
-    "SELECT AVG(value) as avg_value, COUNT(*) as cnt FROM readings WHERE measurement = ? AND timestamp >= ?"
-  ).get(measurement, t1) as TrendRow | undefined;
+    "SELECT AVG(value) as avg_value, COUNT(*) as cnt FROM readings WHERE device_id = ? AND measurement = ? AND timestamp >= ?"
+  ).get(deviceId, measurement, t1) as TrendRow | undefined;
 
   const previous = d.prepare(
-    "SELECT AVG(value) as avg_value, COUNT(*) as cnt FROM readings WHERE measurement = ? AND timestamp >= ? AND timestamp < ?"
-  ).get(measurement, t2, t1) as TrendRow | undefined;
+    "SELECT AVG(value) as avg_value, COUNT(*) as cnt FROM readings WHERE device_id = ? AND measurement = ? AND timestamp >= ? AND timestamp < ?"
+  ).get(deviceId, measurement, t2, t1) as TrendRow | undefined;
 
   if (!current || !previous || current.cnt < 5 || previous.cnt < 5
       || current.avg_value === null || previous.avg_value === null) {
@@ -88,6 +89,27 @@ export function queryTrend(measurement: string): TrendResult {
   }
 
   return { direction: delta > 0 ? "up" : "down", delta };
+}
+
+export interface DeviceRow {
+  device_id: string;
+  name: string;
+  first_seen: number;
+  last_seen: number;
+}
+
+export function listDevices(): DeviceRow[] {
+  const d = getDb();
+  return d
+    .prepare("SELECT device_id, name, first_seen, last_seen FROM devices ORDER BY name ASC")
+    .all() as DeviceRow[];
+}
+
+export function updateDeviceName(deviceId: string, name: string): void {
+  const writableDb = new Database(DB_PATH);
+  writableDb.pragma("journal_mode = WAL");
+  writableDb.prepare("UPDATE devices SET name = ? WHERE device_id = ?").run(name, deviceId);
+  writableDb.close();
 }
 
 export function getAllSettings(): Record<string, string> {

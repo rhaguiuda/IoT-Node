@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MaterialIcon from "@/components/MaterialIcon";
-import type { Settings } from "@/lib/types";
+import type { Settings, Device } from "@/lib/types";
 
 const defaultSettings: Settings = {
   co2_threshold: 1000,
@@ -26,6 +26,8 @@ export default function SettingsPanel() {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [savingDevice, setSavingDevice] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -33,6 +35,34 @@ export default function SettingsPanel() {
       .then((data: Settings) => setSettings((prev) => ({ ...prev, ...data })))
       .catch(() => {/* silently fall back to defaults */});
   }, []);
+
+  // Load the device list when the panel is opened so names can be edited.
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch("/api/devices")
+      .then((r) => r.json())
+      .then((list: Device[]) => setDevices(list))
+      .catch(() => {/* ignore */});
+  }, [isOpen]);
+
+  function handleDeviceNameChange(deviceId: string, name: string) {
+    setDevices((prev) => prev.map((d) => (d.device_id === deviceId ? { ...d, name } : d)));
+  }
+
+  async function handleSaveDevice(deviceId: string) {
+    const device = devices.find((d) => d.device_id === deviceId);
+    if (!device) return;
+    setSavingDevice(deviceId);
+    try {
+      await fetch("/api/devices", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ device_id: deviceId, name: device.name }),
+      });
+    } finally {
+      setSavingDevice(null);
+    }
+  }
 
   function handleChange<K extends keyof Settings>(key: K, value: Settings[K]) {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -76,6 +106,39 @@ export default function SettingsPanel() {
       {/* Collapsible content */}
       {isOpen && (
         <div className="card p-5 mt-3">
+          {/* Devices — rename each node */}
+          {devices.length > 0 && (
+            <div className="mb-5">
+              <label className={labelClass}>Dispositivos</label>
+              <div className="space-y-2">
+                {devices.map((d) => (
+                  <div key={d.device_id} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      className={inputClass}
+                      value={d.name}
+                      onChange={(e) => handleDeviceNameChange(d.device_id, e.target.value)}
+                    />
+                    <span
+                      className="text-[11px] font-mono shrink-0 w-28 truncate"
+                      style={{ color: "var(--text-tertiary)" }}
+                      title={d.device_id}
+                    >
+                      {d.device_id}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveDevice(d.device_id)}
+                      disabled={savingDevice === d.device_id}
+                      className="bg-[var(--accent)] text-white rounded-lg px-3 py-2 text-xs font-semibold hover:opacity-90 transition-opacity disabled:opacity-60 shrink-0"
+                    >
+                      {savingDevice === d.device_id ? "..." : "Salvar"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             {/* CO₂ Threshold */}
             <div>
