@@ -18,9 +18,9 @@
 
 **Design Spec:** `docs/superpowers/specs/2026-04-10-air-quality-dashboard-design.md`
 
-**Theme Source:** `/Users/rodrigohaguiuda/Documents/FitBark/fb_v5_debug_terminal/styles.css` (14 themes, lines 9-390)
+**Theme Source:** `/Users/rhaguiuda/Documents/FitBark/fb_v5_debug_terminal/styles.css` (14 themes, lines 9-390)
 
-**FitBark UI Guidelines:** `/Users/rodrigohaguiuda/Documents/FitBark/fitbark_developer_dashboard/docs/ui-guidelines.md`
+**FitBark UI Guidelines:** `/Users/rhaguiuda/Documents/FitBark/fitbark_developer_dashboard/docs/ui-guidelines.md`
 
 **IMPORTANT:** Use the `frontend-design` skill when implementing UI components (Tasks 6-14) for design quality and polish.
 
@@ -104,7 +104,7 @@ IoT-Node/
 - [ ] **Step 1: Move firmware files into `firmware/` subdirectory**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node
 mkdir -p firmware
 # Move PlatformIO project files
 mv src firmware/
@@ -140,7 +140,7 @@ data/
 - [ ] **Step 3: Scaffold the Next.js project**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node
 mkdir -p dashboard
 cd dashboard
 npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --no-import-alias --skip-install
@@ -158,7 +158,7 @@ mkdir -p dashboard/collector
 - [ ] **Step 4: Install dependencies**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
 npm install next@latest react@latest react-dom@latest typescript @types/react @types/react-dom
 npm install tailwindcss @tailwindcss/postcss postcss
 npm install recharts mqtt motion lucide-react better-sqlite3 @types/better-sqlite3
@@ -183,7 +183,7 @@ export default nextConfig;
 - [ ] **Step 6: Verify build works**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
 npm run dev
 ```
 
@@ -192,7 +192,7 @@ Open `http://localhost:3000` — should show default Next.js page. Kill the dev 
 - [ ] **Step 7: Verify firmware still compiles**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/firmware
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/firmware
 pio run
 ```
 
@@ -201,7 +201,7 @@ Expected: `[SUCCESS]`
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node
 git add -A
 git commit -m "chore: restructure repo into firmware/ + dashboard/ monorepo"
 ```
@@ -445,7 +445,7 @@ export const DEFAULT_THEME = "dark";
 
 - [ ] **Step 2: Create globals.css with all 14 theme definitions**
 
-Port all CSS custom properties from the V5 Debug Terminal `styles.css` at `/Users/rodrigohaguiuda/Documents/FitBark/fb_v5_debug_terminal/styles.css` (lines 9-390).
+Port all CSS custom properties from the V5 Debug Terminal `styles.css` at `/Users/rhaguiuda/Documents/FitBark/fb_v5_debug_terminal/styles.css` (lines 9-390).
 
 Read that file and copy all theme blocks. For each theme:
 - Keep: `--bg-primary`, `--bg-secondary`, `--bg-tertiary`, `--bg-elevated`, `--text-primary`, `--text-secondary`, `--text-tertiary`, `--border`, `--border-subtle`, `--accent`, `--accent-hover`, `--accent-strong`, `--accent-dim`, `--accent-border`, `--accent-bg`, `--success`, `--warning`, `--danger`, `--info`, `--purple`, `--cyan`, `--card-shadow`, `--table-hover`, `--pill-bg`, `--pill-active-bg`
@@ -551,7 +551,7 @@ git commit -m "feat: add 14-theme system with CSS custom properties"
 - [ ] **Step 2: Install collector-specific dependencies**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
 npm install mqtt better-sqlite3
 ```
 
@@ -780,7 +780,7 @@ Add to `dashboard/package.json` scripts:
 - [ ] **Step 7: Build and test the collector locally**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
 mkdir -p data
 npm run build:collector
 node dist/index.js
@@ -954,7 +954,7 @@ export async function PUT(request: NextRequest) {
 Start the collector first (so there's data in SQLite), then start the Next.js dev server:
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
 node dist/index.js &
 npm run dev &
 ```
@@ -986,19 +986,19 @@ git commit -m "feat: add telemetry and settings API routes"
 
 - [ ] **Step 1: Create AnimateIn component**
 
-Port the AnimateIn component from the FitBark Developer Dashboard. Reference: `/Users/rodrigohaguiuda/Documents/FitBark/fitbark_developer_dashboard/frontend/components/animation/AnimateIn.tsx`
+Port the AnimateIn component from the FitBark Developer Dashboard. Reference: `/Users/rhaguiuda/Documents/FitBark/fitbark_developer_dashboard/frontend/components/animation/AnimateIn.tsx`
 
 Read the file, adapt to the dashboard project. It wraps children in a `motion.div` with configurable animation type (fadeSlideUp default, 0.45s duration).
 
 - [ ] **Step 2: Create StaggerChildren component**
 
-Port StaggerChildren from FitBark. Reference: `/Users/rodrigohaguiuda/Documents/FitBark/fitbark_developer_dashboard/frontend/components/animation/StaggerChildren.tsx`
+Port StaggerChildren from FitBark. Reference: `/Users/rhaguiuda/Documents/FitBark/fitbark_developer_dashboard/frontend/components/animation/StaggerChildren.tsx`
 
 Default stagger: 0.04s for KPI grids.
 
 - [ ] **Step 3: Create CountUp component**
 
-Port CountUp from FitBark. Reference: `/Users/rodrigohaguiuda/Documents/FitBark/fitbark_developer_dashboard/frontend/components/animation/CountUp.tsx`
+Port CountUp from FitBark. Reference: `/Users/rhaguiuda/Documents/FitBark/fitbark_developer_dashboard/frontend/components/animation/CountUp.tsx`
 
 Uses `animate` from `motion` to animate from 0 (or previous value) to target value over 0.5s. Supports `prefix`, `suffix`, `decimals`.
 
@@ -1351,7 +1351,7 @@ Data flow:
 - [ ] **Step 2: Test the complete dashboard**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
 npm run dev
 ```
 
@@ -1445,7 +1445,7 @@ services:
 - [ ] **Step 3: Test Docker build locally**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node/dashboard
 docker compose build
 docker compose up -d
 ```
@@ -1459,7 +1459,7 @@ docker compose down
 - [ ] **Step 4: Deploy to Bee-Docker**
 
 ```bash
-cd /Users/rodrigohaguiuda/Documents/PlatformIO/Projects/IoT-Node
+cd /Users/rhaguiuda/Documents/PlatformIO/Projects/IoT-Node
 # Copy project to Bee-Docker
 scp -r dashboard Bee-Docker:/home/rhaguiuda/iotnode-dashboard/
 ssh Bee-Docker "cd /home/rhaguiuda/iotnode-dashboard/dashboard && docker compose up -d --build"

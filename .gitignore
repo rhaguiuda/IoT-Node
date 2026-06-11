@@ -21,3 +21,6 @@ menubar/build
 # Superpowers brainstorm
 .superpowers/
 .pio
+
+# Editor config (per-machine)
+.vscode/
