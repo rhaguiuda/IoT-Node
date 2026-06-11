@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { RangeId } from "@/lib/types";
+import type { RangeId, Device } from "@/lib/types";
 import RangeSelector from "@/components/RangeSelector";
 import ThemePicker from "@/components/ThemePicker";
 import StatusBadge from "@/components/StatusBadge";
+import DeviceSelector from "@/components/DeviceSelector";
 
 const SENSOR_TIMEOUT_MS = 30000;
 
@@ -13,9 +14,20 @@ interface HeaderProps {
   lastMessage: number;
   range: RangeId;
   onRangeChange: (id: RangeId) => void;
+  devices: Device[];
+  selectedDevice: string | null;
+  onDeviceChange: (deviceId: string) => void;
 }
 
-export default function Header({ connected, lastMessage, range, onRangeChange }: HeaderProps) {
+export default function Header({
+  connected,
+  lastMessage,
+  range,
+  onRangeChange,
+  devices,
+  selectedDevice,
+  onDeviceChange,
+}: HeaderProps) {
   const [sensorAlive, setSensorAlive] = useState(false);
 
   useEffect(() => {
@@ -33,6 +45,7 @@ export default function Header({ connected, lastMessage, range, onRangeChange }:
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-bold font-display">Air Quality Node</h2>
+          <DeviceSelector devices={devices} value={selectedDevice} onChange={onDeviceChange} />
           <StatusBadge
             level={sensorAlive ? "success" : "danger"}
             label={sensorAlive ? "Sensor Online" : "Sensor Offline"}

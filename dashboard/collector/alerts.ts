@@ -1,15 +1,13 @@
-import { getSetting } from "./db";
+import { getSetting, getDeviceName } from "./db";
 
-let lastCo2Alert = 0;
-let lastOfflineAlert = 0;
-let lastMessageTime = Date.now();
+// Alert state is tracked per device so one node's CO2 spike or outage does not
+// suppress alerts for another. Keys are device ids.
+const lastCo2Alert = new Map<string, number>();
+const lastOfflineAlert = new Map<string, number>();
+const lastMessageTime = new Map<string, number>();
 
-export function updateLastMessageTime(): void {
-  lastMessageTime = Date.now();
-}
-
-export function getLastMessageTime(): number {
-  return lastMessageTime;
+export function updateLastMessageTime(deviceId: string): void {
+  lastMessageTime.set(deviceId, Date.now());
 }
 
 async function sendPushover(message: string, priority: number): Promise<void> {
@@ -39,25 +37,31 @@ async function sendPushover(message: string, priority: number): Promise<void> {
   }
 }
 
-export async function checkCo2Alert(value: number): Promise<void> {
+export async function checkCo2Alert(deviceId: string, value: number): Promise<void> {
   if (getSetting("alerts_enabled") !== "true") return;
   const threshold = parseInt(getSetting("co2_threshold") || "1000", 10);
   const cooldown = parseInt(getSetting("alert_cooldown") || "15", 10) * 60 * 1000;
   const now = Date.now();
-  if (value > threshold && now - lastCo2Alert > cooldown) {
-    lastCo2Alert = now;
-    await sendPushover(`CO\u2082 at ${Math.round(value)} ppm (threshold: ${threshold})`, 0);
+  if (value > threshold && now - (lastCo2Alert.get(deviceId) ?? 0) > cooldown) {
+    lastCo2Alert.set(deviceId, now);
+    await sendPushover(
+      `${getDeviceName(deviceId)}: CO₂ at ${Math.round(value)} ppm (threshold: ${threshold})`,
+      0,
+    );
   }
 }
 
+// Checks every device that has reported at least once this process lifetime.
 export async function checkOfflineAlert(): Promise<void> {
   if (getSetting("alerts_enabled") !== "true") return;
   const timeout = parseInt(getSetting("offline_timeout") || "5", 10) * 60 * 1000;
   const now = Date.now();
-  const elapsed = now - lastMessageTime;
-  if (elapsed > timeout && now - lastOfflineAlert > 30 * 60 * 1000) {
-    lastOfflineAlert = now;
-    const minutes = Math.round(elapsed / 60000);
-    await sendPushover(`Air Quality Node offline for ${minutes} minutes`, 1);
+  for (const [deviceId, lastSeen] of lastMessageTime) {
+    const elapsed = now - lastSeen;
+    if (elapsed > timeout && now - (lastOfflineAlert.get(deviceId) ?? 0) > 30 * 60 * 1000) {
+      lastOfflineAlert.set(deviceId, now);
+      const minutes = Math.round(elapsed / 60000);
+      await sendPushover(`${getDeviceName(deviceId)} offline for ${minutes} minutes`, 1);
+    }
   }
 }

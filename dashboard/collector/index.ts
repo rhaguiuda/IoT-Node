@@ -1,9 +1,10 @@
 import mqtt from "mqtt";
-import { insertReading, purgeOldReadings } from "./db";
+import { insertReading, upsertDevice, purgeOldReadings } from "./db";
 import { checkCo2Alert, checkOfflineAlert, updateLastMessageTime } from "./alerts";
 
 const MQTT_URL = process.env.MQTT_URL || "mqtt://192.168.100.224:1883";
-const TOPIC = "teras/iotnode/1/telemetry/#";
+// Wildcard at the device-id position: teras/iotnode/<deviceId>/telemetry/<measurement>
+const TOPIC = "teras/iotnode/+/telemetry/#";
 const VALID_MEASUREMENTS = new Set(["co2", "temp", "umi"]);
 
 console.log("[COLLECTOR] Starting...");
@@ -20,16 +21,20 @@ client.on("connect", () => {
 });
 
 client.on("message", async (topic, payload) => {
-  // topic: teras/iotnode/1/telemetry/<measurement>
-  const measurement = topic.split("/").pop();
-  if (!measurement || !VALID_MEASUREMENTS.has(measurement)) return;
+  // topic: teras/iotnode/<deviceId>/telemetry/<measurement>
+  const parts = topic.split("/");
+  if (parts.length < 5) return;
+  const deviceId = parts[2];
+  const measurement = parts[parts.length - 1];
+  if (!deviceId || !measurement || !VALID_MEASUREMENTS.has(measurement)) return;
   const value = parseFloat(payload.toString());
   if (isNaN(value)) return;
   const timestamp = Math.floor(Date.now() / 1000);
-  insertReading(measurement, value, timestamp);
-  updateLastMessageTime();
+  insertReading(deviceId, measurement, value, timestamp);
+  upsertDevice(deviceId, timestamp);
+  updateLastMessageTime(deviceId);
   if (measurement === "co2") {
-    await checkCo2Alert(value);
+    await checkCo2Alert(deviceId, value);
   }
 });
 

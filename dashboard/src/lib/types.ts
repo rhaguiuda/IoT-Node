@@ -10,6 +10,13 @@ export interface Reading {
   value: number;
 }
 
+export interface Device {
+  device_id: string;
+  name: string;
+  first_seen: number;
+  last_seen: number;
+}
+
 export interface SensorData {
   co2: Reading[];
   temp: Reading[];
