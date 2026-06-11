@@ -43,25 +43,26 @@ Each sensor reading passes through a `SimpleKalmanFilter` (q=0.5, light smoothin
 
 The node publishes telemetry to an EMQX broker over WiFi.
 
-**Topic pattern:** `teras/iotnode/1/telemetry/<measurement>`
+**Topic pattern:** `teras/iotnode/<device_id>/telemetry/<measurement>`, where `<device_id>` is the device's WiFi MAC (12-char lowercase hex, e.g. `e8069066185c`). The collector subscribes to the wildcard `teras/iotnode/+/telemetry/#`.
 
 | Topic | Unit | Update Rate |
 |---|---|---|
-| `teras/iotnode/1/telemetry/co2` | ppm | ~5s |
-| `teras/iotnode/1/telemetry/temp` | °C | ~5s |
-| `teras/iotnode/1/telemetry/umi` | % | ~5s |
+| `teras/iotnode/<device_id>/telemetry/co2` | ppm | ~5s |
+| `teras/iotnode/<device_id>/telemetry/temp` | °C | ~5s |
+| `teras/iotnode/<device_id>/telemetry/umi` | % | ~5s |
 
-**Connection details:**
-- **Client ID:** `AirQualityNode`
-- **WiFi hostname:** `AirQualityNode`
+**Connection details (per device, derived from the WiFi MAC):**
+- **Client ID:** `iotnode-<mac>` — unique per device; this is what prevents two nodes from disconnecting each other on the broker.
+- **WiFi hostname:** `AirQualityNode-<mac>`
 
 ## Reliability Features
 
-- **Watchdog timer (30s)** — automatically resets the device if the main loop stops responding.
+- **Watchdog timer (15s)** — automatically resets the device if the main loop stops responding.
 - **Non-blocking WiFi reconnection** — uses a 15-second timeout instead of blocking forever.
 - **Non-blocking MQTT reconnection** — attempts to reconnect once every 5 seconds without blocking sensor reads.
-- **I2C bus recovery** — if 10 consecutive I2C failures are detected, the firmware performs a clock-out recovery (16 SCL pulses + STOP condition) and reinitializes the sensor.
-- **Heartbeat LED** — the built-in LED blinks at 1 Hz to provide a visual indication that the firmware is running.
+- **I2C bus recovery** — if 5 consecutive I2C failures are detected, the firmware performs a clock-out recovery (16 SCL pulses + STOP condition) and reinitializes the sensor.
+- **Preventive auto-restart** — the device reboots itself every 24h to clear any slow resource leaks.
+- **Heartbeat LED** — the RGB LED emits a short red flash (50ms every 5s) to show the firmware is running.
 - **Boot diagnostics** — tracks reset reason (power on, watchdog, brownout, panic) and boot count in NVS flash. Cumulative counters persist across reboots for debugging intermittent failures.
 - **Periodic status line** — prints WiFi state, MQTT state, sensor status, free heap, uptime, and last reset reason every 10 seconds over serial.
 
@@ -112,7 +113,7 @@ Each KPI card shows a trend arrow (↑ ↓ —) comparing the average of the las
 | Humidity | < 1.0% | Neutral | Neutral |
 
 - **Minimum data:** 5 readings per window (~25s) before showing trend
-- **Update frequency:** every 10 seconds via `GET /api/trend`
+- **Update frequency:** every 10 seconds via `GET /api/trend?device=<id>` (per selected device)
 - **Null-safe:** ignores periods with insufficient data
 
 ### Run locally
@@ -171,6 +172,8 @@ The collector persists every MQTT message to SQLite as it arrives (~3 inserts ev
 | umi | ~1 every 5s |
 
 **Retention:** 90 days. The collector purges older records on startup and every 24 hours.
+
+**Schema (multi-device):** `readings(id, device_id, measurement, value, timestamp)` keyed by `device_id` (the WiFi MAC), plus `devices(device_id, name, first_seen, last_seen)` and `settings(key, value)`. Devices are auto-registered on first contact (name defaults to the id, editable in the dashboard Settings; the collector's upsert never overwrites the name). A device id is parsed from the topic on each message. On boot the collector runs an idempotent migration that adds `device_id` to legacy DBs and backfills old rows with `'1'`.
 
 ### Dashboard Downsampling
 
@@ -246,7 +249,7 @@ The app runs as a menu bar agent (`LSUIElement = true`) — no Dock icon. Add it
 
 ### Architecture
 
-- **MQTTClient.swift** — CocoaMQTT5 connection to `192.168.100.224:1883`, subscribes to `teras/iotnode/1/telemetry/#`, parses measurements, publishes to SwiftUI via `@Published` properties
+- **MQTTClient.swift** — CocoaMQTT5 connection to `192.168.100.224:1883`, subscribes to `teras/iotnode/1/telemetry/#`, parses measurements, publishes to SwiftUI via `@Published` properties. **⚠️ Still single-device / not multi-device aware:** hardcoded to the `/1/` topic, so it no longer receives data now that devices publish under their MAC. Needs porting (subscribe to `+`, pick/pin a device).
 - **AirQualityApp.swift** — `MenuBarExtra` entry point, renders values in menu bar label
 - **PopoverView.swift** — expanded popover with metric rows, status colors, dashboard link
 
