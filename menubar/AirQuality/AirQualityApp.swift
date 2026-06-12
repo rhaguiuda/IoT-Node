@@ -12,6 +12,11 @@ struct AirQualityApp: App {
             MenuBarLabel(co2: mqtt.co2, temp: mqtt.temp, umi: mqtt.umi)
         }
         .menuBarExtraStyle(.window)
+
+        Window("Configurações", id: "config") {
+            ConfigView(mqtt: mqtt)
+        }
+        .windowResizability(.contentSize)
     }
 }
 

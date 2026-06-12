@@ -48,9 +48,42 @@ Fluxo: `firmware (ESP32) → MQTT → collector → SQLite → dashboard (web) /
 
 ## menubar/
 
-- Swift 5.9+, macOS 13+, dependência CocoaMQTT (SPM). Subscreve `teras/iotnode/1/telemetry/#`.
-- **⚠️ Ainda single-device:** o menubar continua hardcoded ao tópico `/1/` e **não foi atualizado para multi-device**. Como o device real agora publica sob seu MAC (não `/1/`), o menubar não recebe dados até ser portado (assinar `+`, escolher/fixar um device).
-- Build: `cd menubar && swift build -c release` → `.build/release/AirQuality`. Empacotar em `build/AirQuality.app` e copiar para `/Applications/`.
+- Swift 5.9+, macOS 13+, dependência CocoaMQTT (SPM). **Multi-device:** assina o wildcard `teras/iotnode/+/telemetry/#`, rastreia todos os devices ao vivo, e exibe na barra os valores do device **selecionado**. Nomes amigáveis vêm de `GET /api/devices` do dashboard (fallback pro MAC). Janela **Configurações…** (cena `Window` `id "config"`) lista os devices e deixa escolher qual aparece na barra; seleção persiste em `UserDefaults`. Parser de tópico isolado em `AirQualityCore/` (target de lib) com testes em `Tests/AirQualityCoreTests` (`swift test`).
+- Build/empacotar/instalar:
+  ```bash
+  cd menubar
+  swift build -c release
+  cp .build/release/AirQuality build/AirQuality.app/Contents/MacOS/AirQuality
+  codesign --force --sign "Teras Air Quality Signing" build/AirQuality.app   # SEMPRE assinar (ver abaixo)
+  cp -R build/AirQuality.app /Applications/ && open /Applications/AirQuality.app
+  ```
+
+### ⚠️⚠️ Armadilha de Rede Local do macOS (CRÍTICO — leia antes de mexer no menubar)
+
+**Custou ~1h30 de debug em 2026-06-12. Não regredir. Se o app "parar de receber dados", quase certamente é isto.**
+
+**Sintoma:** o app instalado em `/Applications` (aberto via `open`/Finder/Login Items) **não recebe nenhum dado** — a janela Configurações mostra "nenhum sensor". Porém o **mesmo binário** rodado direto pelo terminal (`.build/release/AirQuality` ou `/Applications/AirQuality.app/Contents/MacOS/AirQuality`) **funciona**. O log interno mostra `didDisconnect err=... Code=65 "No route to host"` ~60-80ms após o connect, num IP da LAN que está perfeitamente acessível.
+
+**Por que terminal funciona e app instalado não:** é privacidade de **Rede Local** (TCC, macOS 15+). Rodado pelo terminal, o processo responsável é o Terminal, que já tem permissão de rede local → herda. Lançado via LaunchServices, o app é seu próprio processo responsável e precisa da permissão própria. `No route to host` num IP local, app-específico, é a **assinatura clássica do bloqueio de Rede Local** — não é roteamento de rede.
+
+**As DUAS causas-raiz (ambas já corrigidas no código/build):**
+
+1. **Socket cru não dispara o prompt.** O CocoaMQTT conecta via `GCDAsyncSocket` (socket BSD cru). O macOS **bloqueia socket cru em silêncio** e **nunca mostra o prompt** de Rede Local nem registra o app na lista — então não há o que conceder, faça o que fizer. Só APIs de alto nível (Network.framework / Bonjour) disparam o prompt. **Correção:** `MQTTClient.triggerLocalNetworkPermission()` dispara uma sondagem `NWConnection` curta ao broker no startup, só pra forçar o prompt a aparecer e registrar o app. A permissão concedida vale pro **app inteiro** (não por API), então o socket do CocoaMQTT passa a conectar. **NÃO remover essa sondagem** — sem ela o prompt nunca aparece.
+
+2. **A permissão gruda na ASSINATURA de código.** O TCC de Rede Local atribui a permissão pela identidade de assinatura do app. **Ad-hoc (`codesign -s -`) NÃO funciona**: a assinatura ad-hoc (cdhash) muda a cada build/re-sign, então a permissão nunca cola e o prompt nem reaparece. **Correção:** assinar com uma identidade self-signed **estável**, `Teras Air Quality Signing` (no login keychain). **Todo rebuild tem que ser assinado com a MESMA identidade**, senão a permissão quebra e tem que reconceder.
+
+**O que NÃO funciona (becos sem saída já testados — não repetir):**
+- Ligar/religar o toggle na lista de Rede Local quando a entrada é de uma assinatura antiga (não casa com o processo atual).
+- `tccutil reset All com.<bundle>` — **não mexe** em Rede Local nesse macOS (entradas continuam lá).
+- Trocar o bundle id sozinho — sem a sondagem NWConnection, continua sem prompt.
+- Assinatura ad-hoc, mesmo com bundle id limpo — sem prompt.
+- App como foreground (sem `LSUIElement`) — não era o problema; o problema era o socket cru.
+
+**Setup do certificado (uma vez):** Keychain Access → Assistente de Certificado → Criar um Certificado → tipo **Code Signing**, nome `Teras Air Quality Signing`. (Aparece como `CSSMERR_TP_NOT_TRUSTED` em `security find-identity -v`, mas **assina mesmo assim** — confiança importa pra verificação, não pra assinar.)
+
+**Recuperação se quebrar no futuro:** confirme que (a) a sondagem NWConnection ainda está no `MQTTClient`, (b) o build foi assinado com `Teras Air Quality Signing`. Rode o binário pelo terminal pra isolar (se funciona no terminal mas não instalado = é Rede Local). Reabra o app instalado e conceda o prompt. Bundle id atual: `com.teras.airqualitynode` (o antigo `com.teras.airquality` deixou 2 entradas órfãs na lista de Rede Local — inofensivas, a UI não remove).
+
+> **Nota de fragilidade:** `menubar/build` está no `.gitignore`, então o `Info.plist` do bundle (bundle id, `NSLocalNetworkUsageDescription`, `LSUIElement`) **não é versionado** — num checkout limpo essa config se perde. Pendente: mover um `Info.plist` fonte pra fora de `build/` + script de empacotamento.
 
 ## Deploy (`deploy.sh`, rodado no Mac)
 

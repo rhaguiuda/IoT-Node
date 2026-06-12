@@ -8,10 +8,19 @@ let package = Package(
         .package(url: "https://github.com/emqx/CocoaMQTT.git", from: "2.1.6"),
     ],
     targets: [
+        .target(
+            name: "AirQualityCore",
+            path: "AirQualityCore"
+        ),
         .executableTarget(
             name: "AirQuality",
-            dependencies: ["CocoaMQTT"],
+            dependencies: ["CocoaMQTT", "AirQualityCore"],
             path: "AirQuality"
+        ),
+        .testTarget(
+            name: "AirQualityCoreTests",
+            dependencies: ["AirQualityCore"],
+            path: "Tests/AirQualityCoreTests"
         ),
     ]
 )

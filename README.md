@@ -212,12 +212,14 @@ Native Swift app that shows real-time CO₂, temperature, and humidity in the ma
 
 ### What it shows
 
-**Menu bar:** `1143ppm  29.5°  45%` — all three values updated in real-time (~5s). CO₂ value is color-coded:
+**Menu bar:** `1143ppm  29.5°  45%` — all three values for the *selected device*, updated in real-time (~5s). CO₂ value is color-coded:
 - **Normal** (< 1000 ppm) — system default color
-- **Yellow** (1000–1500 ppm) — elevated
+- **Orange** (1000–1500 ppm) — elevated
 - **Red** (> 1500 ppm) — high
 
-**Popover (click):** expanded view with metric rows, color-coded status indicators, last update timestamp, and a link to open the web dashboard.
+**Popover (click):** expanded view with the selected device's name in the header, metric rows, color-coded status indicators, last update timestamp, a link to the web dashboard, and a **Configurações…** button.
+
+**Multi-device:** the app subscribes to the wildcard `teras/iotnode/+/telemetry/#` and tracks every device live. Friendly names come from the dashboard's `GET /api/devices` (falls back to the raw MAC if the web is down). The **Configurações…** window lists the discovered devices and lets you pick which one the menu bar shows; the choice persists in `UserDefaults`. The first device to report is auto-selected until you pick one.
 
 ### Build
 
@@ -231,27 +233,39 @@ swift build
 
 # Release build
 swift build -c release
+
+# Unit tests (topic parser)
+swift test
 ```
 
 ### Install as .app
 
-The release build is packaged as a macOS app bundle at `menubar/build/AirQuality.app`.
+The release build is packaged into the app bundle at `menubar/build/AirQuality.app`, **code-signed**, then copied to `/Applications`.
 
 ```bash
-# Copy to Applications
-cp -R menubar/build/AirQuality.app /Applications/
-
-# Open
+cd menubar
+swift build -c release
+cp .build/release/AirQuality build/AirQuality.app/Contents/MacOS/AirQuality
+codesign --force --sign "Teras Air Quality Signing" build/AirQuality.app
+cp -R build/AirQuality.app /Applications/
 open /Applications/AirQuality.app
 ```
 
 The app runs as a menu bar agent (`LSUIElement = true`) — no Dock icon. Add it to **System Settings → General → Login Items** to start automatically on boot.
 
+> **⚠️ Local Network permission (macOS 15+).** The app talks to the broker on the LAN, so macOS gates it behind **Local Network** privacy. Two gotchas, both already handled in the code/build but worth knowing:
+> - CocoaMQTT uses a raw BSD socket (`GCDAsyncSocket`), which macOS **blocks silently** (`No route to host`) and never prompts for. `MQTTClient` fires a tiny `NWConnection` probe to the broker at startup purely to trigger the Local Network prompt — `Network.framework` participates in the privacy flow, raw sockets don't.
+> - The Local Network grant is keyed to the app's **code signature**, so the bundle is signed with a stable self-signed identity (`Teras Air Quality Signing`). Always sign every rebuild with the **same** identity, otherwise the grant breaks and you'll have to re-allow it. Ad-hoc signing (`-s -`) does **not** work — its signature changes every build, so the grant never sticks. The bundle id is `com.teras.airqualitynode`.
+>
+> On first launch you'll get a "find devices on your local network" prompt — allow it once. To create the signing identity (one-time): Keychain Access → Certificate Assistant → Create a Certificate → *Code Signing* type, named `Teras Air Quality Signing`.
+
 ### Architecture
 
-- **MQTTClient.swift** — CocoaMQTT5 connection to `192.168.100.224:1883`, subscribes to `teras/iotnode/1/telemetry/#`, parses measurements, publishes to SwiftUI via `@Published` properties. **⚠️ Still single-device / not multi-device aware:** hardcoded to the `/1/` topic, so it no longer receives data now that devices publish under their MAC. Needs porting (subscribe to `+`, pick/pin a device).
-- **AirQualityApp.swift** — `MenuBarExtra` entry point, renders values in menu bar label
-- **PopoverView.swift** — expanded popover with metric rows, status colors, dashboard link
+- **AirQualityCore/** — `parseTopic()`, a pure function that splits a telemetry topic into `(deviceID, measurement)`. Lives in its own library target so it can be unit-tested (`Tests/AirQualityCoreTests`).
+- **MQTTClient.swift** — CocoaMQTT5 connection to `192.168.100.224:1883`, subscribes to the wildcard `teras/iotnode/+/telemetry/#`, keeps per-device readings, discovers devices live, fetches friendly names from the dashboard API, and exposes the selected device's values via `@Published` properties. Also holds the `NWConnection` Local Network probe (see above).
+- **AirQualityApp.swift** — `MenuBarExtra` entry point plus the `Configurações` `Window` scene.
+- **PopoverView.swift** — expanded popover with metric rows, status colors, dashboard link, and the Configurações button.
+- **ConfigView.swift** — device picker window (single-select list of discovered devices, friendly name + MAC).
 
 ## Firmware Dependencies
 

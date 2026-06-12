@@ -2,12 +2,13 @@ import SwiftUI
 
 struct PopoverView: View {
     @ObservedObject var mqtt: MQTTClient
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack {
-                Text("Air Quality Node")
+                Text(mqtt.selectedName ?? "Air Quality Node")
                     .font(.headline)
                 Spacer()
                 Circle()
@@ -67,10 +68,26 @@ struct PopoverView: View {
 
             Divider()
 
-            Button("Sair") {
-                NSApplication.shared.terminate(nil)
+            HStack {
+                Button {
+                    NSApp.activate(ignoringOtherApps: true)
+                    openWindow(id: "config")
+                } label: {
+                    HStack {
+                        Image(systemName: "gearshape")
+                        Text("Configurações…")
+                    }
+                    .font(.caption)
+                }
+                .buttonStyle(.link)
+
+                Spacer()
+
+                Button("Sair") {
+                    NSApplication.shared.terminate(nil)
+                }
+                .font(.caption)
             }
-            .font(.caption)
         }
         .padding(16)
         .frame(width: 260)
