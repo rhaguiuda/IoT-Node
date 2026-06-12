@@ -240,16 +240,20 @@ swift test
 
 ### Install as .app
 
-The release build is packaged into the app bundle at `menubar/build/AirQuality.app`, **code-signed**, then copied to `/Applications`.
+Use the packaging script — it builds, assembles the bundle from the versioned
+`menubar/Info.plist`, signs it with the stable identity, and installs to
+`/Applications`:
 
 ```bash
 cd menubar
-swift build -c release
-cp .build/release/AirQuality build/AirQuality.app/Contents/MacOS/AirQuality
-codesign --force --sign "Teras Air Quality Signing" build/AirQuality.app
-cp -R build/AirQuality.app /Applications/
-open /Applications/AirQuality.app
+./package.sh                # build, sign, install, open
+./package.sh --no-install   # build + sign the bundle only
 ```
+
+`menubar/Info.plist` is the versioned source of truth for the bundle metadata
+(bundle id, `LSUIElement`, Local Network usage string). The assembled
+`build/AirQuality.app` is generated and gitignored. The script refuses to run if
+the `Teras Air Quality Signing` identity is missing (see the Local Network note).
 
 The app runs as a menu bar agent (`LSUIElement = true`) — no Dock icon. Add it to **System Settings → General → Login Items** to start automatically on boot.
 

@@ -49,14 +49,8 @@ Fluxo: `firmware (ESP32) → MQTT → collector → SQLite → dashboard (web) /
 ## menubar/
 
 - Swift 5.9+, macOS 13+, dependência CocoaMQTT (SPM). **Multi-device:** assina o wildcard `teras/iotnode/+/telemetry/#`, rastreia todos os devices ao vivo, e exibe na barra os valores do device **selecionado**. Nomes amigáveis vêm de `GET /api/devices` do dashboard (fallback pro MAC). Janela **Configurações…** (cena `Window` `id "config"`) lista os devices e deixa escolher qual aparece na barra; seleção persiste em `UserDefaults`. Parser de tópico isolado em `AirQualityCore/` (target de lib) com testes em `Tests/AirQualityCoreTests` (`swift test`).
-- Build/empacotar/instalar:
-  ```bash
-  cd menubar
-  swift build -c release
-  cp .build/release/AirQuality build/AirQuality.app/Contents/MacOS/AirQuality
-  codesign --force --sign "Teras Air Quality Signing" build/AirQuality.app   # SEMPRE assinar (ver abaixo)
-  cp -R build/AirQuality.app /Applications/ && open /Applications/AirQuality.app
-  ```
+- Build/empacotar/instalar: **use `menubar/package.sh`** (build + monta o bundle a partir de `menubar/Info.plist` + assina com o cert estável + instala). Recusa rodar se o cert não existir. `./package.sh` (instala) ou `./package.sh --no-install`. **Não fazer mais `cp`/`codesign` na mão** — o script garante a assinatura correta.
+- **`menubar/Info.plist` é a fonte versionada** do metadado do bundle (bundle id `com.teras.airqualitynode`, `LSUIElement`, `NSLocalNetworkUsageDescription`). O `build/AirQuality.app` é gerado e fica no `.gitignore` — o script o remonta. Editar metadado do bundle = editar `menubar/Info.plist`, não o `.app`.
 
 ### ⚠️⚠️ Armadilha de Rede Local do macOS (CRÍTICO — leia antes de mexer no menubar)
 
@@ -81,9 +75,7 @@ Fluxo: `firmware (ESP32) → MQTT → collector → SQLite → dashboard (web) /
 
 **Setup do certificado (uma vez):** Keychain Access → Assistente de Certificado → Criar um Certificado → tipo **Code Signing**, nome `Teras Air Quality Signing`. (Aparece como `CSSMERR_TP_NOT_TRUSTED` em `security find-identity -v`, mas **assina mesmo assim** — confiança importa pra verificação, não pra assinar.)
 
-**Recuperação se quebrar no futuro:** confirme que (a) a sondagem NWConnection ainda está no `MQTTClient`, (b) o build foi assinado com `Teras Air Quality Signing`. Rode o binário pelo terminal pra isolar (se funciona no terminal mas não instalado = é Rede Local). Reabra o app instalado e conceda o prompt. Bundle id atual: `com.teras.airqualitynode` (o antigo `com.teras.airquality` deixou 2 entradas órfãs na lista de Rede Local — inofensivas, a UI não remove).
-
-> **Nota de fragilidade:** `menubar/build` está no `.gitignore`, então o `Info.plist` do bundle (bundle id, `NSLocalNetworkUsageDescription`, `LSUIElement`) **não é versionado** — num checkout limpo essa config se perde. Pendente: mover um `Info.plist` fonte pra fora de `build/` + script de empacotamento.
+**Recuperação se quebrar no futuro:** confirme que (a) a sondagem NWConnection ainda está no `MQTTClient`, (b) o build foi assinado com `Teras Air Quality Signing` (o `package.sh` garante isso). Rode o binário pelo terminal pra isolar (se funciona no terminal mas não instalado = é Rede Local). Reabra o app instalado e conceda o prompt. Bundle id atual: `com.teras.airqualitynode` (o antigo `com.teras.airquality` deixou entradas órfãs na lista de Rede Local — inofensivas; a UI não remove e o `tccutil` não reseta Rede Local, só dá pra limpar apagando `/Library/Preferences/com.apple.networkextension.*.plist` em modo Recovery, o que zera a lista toda).
 
 ## Deploy (`deploy.sh`, rodado no Mac)
 
