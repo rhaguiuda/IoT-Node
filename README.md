@@ -1,25 +1,26 @@
 # IoT Air Quality Node
 
-Indoor air quality monitoring system with an ESP32-S2 sensor node, a real-time web dashboard, and a macOS menu bar app. Measures CO2, temperature, and humidity using a Sensirion SCD41 NDIR sensor, publishing telemetry over MQTT.
+Indoor air quality monitoring system with an ESP32-C3 sensor node, a real-time web dashboard, a macOS menu bar app, and an M5Stack Core2 bedside display. Measures CO2, temperature, and humidity using a Sensirion SCD41 NDIR sensor, publishing telemetry over MQTT.
 
 ## Project Structure
 
 ```
 IoT-Node/
-├── firmware/      ← ESP32-S2 PlatformIO firmware
-├── dashboard/     ← Next.js web dashboard + MQTT collector
-├── menubar/       ← macOS menu bar app (Swift)
-└── docs/          ← Design specs and plans
+├── firmware/        ← ESP32-C3 sensor node (PlatformIO) — reads SCD41, publishes
+├── firmware-core2/  ← M5Stack Core2 bedside NTP clock + display (consumes telemetry)
+├── dashboard/       ← Next.js web dashboard + MQTT collector
+├── menubar/         ← macOS menu bar app (Swift)
+└── docs/            ← Design specs and plans
 ```
 
 ## Hardware
 
 | Component | Description |
 |---|---|
-| **MCU** | Lolin S2 Mini (ESP32-S2) |
+| **MCU** | ESP32-C3-DevKitM-1 |
 | **Framework** | Arduino via PlatformIO |
-| **I2C Bus** | SDA = GPIO 37, SCL = GPIO 39 |
-| **LED** | Built-in heartbeat on GPIO 15 (blinks to indicate the main loop is running) |
+| **I2C Bus** | SDA = GPIO 4, SCL = GPIO 6 |
+| **LED** | RGB neopixel on GPIO 8 — **error indicator**: blinks red (~1 Hz) only when something is wrong (SCD41 off the bus, I2C failures, WiFi/MQTT down); off when healthy |
 
 ### Sensor
 
@@ -62,7 +63,7 @@ The node publishes telemetry to an EMQX broker over WiFi.
 - **Non-blocking MQTT reconnection** — attempts to reconnect once every 5 seconds without blocking sensor reads.
 - **I2C bus recovery** — if 5 consecutive I2C failures are detected, the firmware performs a clock-out recovery (16 SCL pulses + STOP condition) and reinitializes the sensor.
 - **Preventive auto-restart** — the device reboots itself every 24h to clear any slow resource leaks.
-- **Heartbeat LED** — the RGB LED emits a short red flash (50ms every 5s) to show the firmware is running.
+- **Error-indicator LED** — the RGB LED blinks red (~1 Hz) only when something is wrong (SCD41 off the bus, I2C failures, WiFi or MQTT disconnected). When everything is healthy the LED stays off.
 - **Boot diagnostics** — tracks reset reason (power on, watchdog, brownout, panic) and boot count in NVS flash. Cumulative counters persist across reboots for debugging intermittent failures.
 - **Periodic status line** — prints WiFi state, MQTT state, sensor status, free heap, uptime, and last reset reason every 10 seconds over serial.
 
@@ -83,7 +84,29 @@ pio run --target upload
 pio device monitor
 ```
 
-The upload and monitor ports are configured in `platformio.ini` for the Lolin S2 Mini.
+The upload and monitor ports are configured in `platformio.ini` for the ESP32-C3-DevKitM-1.
+
+## Core2 Display Node (M5Stack)
+
+A separate PlatformIO project (`firmware-core2/`, board `m5stack-core2`) that turns an M5Stack Core2 into a **bedside NTP clock with a smart screen**. It does **not** read a sensor — it subscribes to the existing nodes' telemetry and displays it live.
+
+> **Why a consumer, not a producer:** the Core2 only exposes **5V** on its external ports (the 3.3V M-Bus pin is covered by the M5GO Bottom2), and the ESP32 GPIO is **not 5V-tolerant** — so a bare 3.3V SCD41 can't be wired to it safely. Instead of fighting that, the Core2 consumes the data the sensor nodes already publish.
+
+**What it shows** (layout "Nightstand"): a large `HH:MM:SS` clock (Font7) + date, three chips (value on top, vector icon below) for CO₂/temp/humidity, and a top status row with MQTT, WiFi, and battery (charging bolt). CO₂ bands: green < 1000, yellow 1000–1500, red > 1500.
+
+- **Time:** the BM8563 RTC keeps time in **UTC**; NTP (`<-03>3`, America/São_Paulo) resyncs every 60 min. TZ is set at boot so the display shows local time immediately. The first sync zeroes the clock before `configTzTime` so `getLocalTime` waits for the real SNTP packet (otherwise it returns the stale RTC value and the time visibly jumps). M5Unified reads the RTC as UTC — storing local time would break the offset.
+- **Data:** subscribes to `teras/iotnode/+/telemetry/#` and shows the live values, `--` when the source goes silent (> 30s). `TARGET_DEVICE` (empty = any node) pins it to one device. It publishes nothing, so it never appears in the dashboard.
+- **RGB bar** (M5GO Battery Bottom2, 10× SK6812 on **GPIO25**, powered by the bus 5V → needs `M5.Power.setExtOutput(true)`): a slow **breathing** effect (~5s, 5–100%) in the CO₂ band color. It follows the screen — off when the display is off (bedside). Brightness is scaled per frame (not `setBrightness`, which causes banding in Adafruit_NeoPixel).
+- **Interaction:** tap the screen to toggle the display; **motion** (MPU6886 IMU) wakes it for 7s then auto-off. The PMU charge LED is disabled.
+
+### Build & Flash
+
+```bash
+cd firmware-core2
+pio run --target upload
+```
+
+The Core2 uses a CH9102 USB-serial chip (a different port from the C3's CP2102) — check `pio device list`. Extra libraries: `M5Unified`, `PubSubClient`, `Adafruit NeoPixel`.
 
 ## Dashboard
 

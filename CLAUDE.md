@@ -7,7 +7,8 @@ Fluxo: `firmware (ESP32) → MQTT → collector → SQLite → dashboard (web) /
 
 | Pasta | O que é |
 |-------|---------|
-| `firmware/` | Firmware do microcontrolador (PlatformIO, Arduino) |
+| `firmware/` | Firmware do nó sensor (ESP32-C3, PlatformIO, Arduino) — lê o SCD41 e publica |
+| `firmware-core2/` | Firmware do M5Stack Core2 — relógio NTP + display que **consome** a telemetria (não lê sensor) |
 | `dashboard/` | Web (Next.js) + collector MQTT→SQLite, dockerizados |
 | `menubar/` | App macOS de menu bar (Swift) |
 | `docs/` | Specs e planos de design (`docs/superpowers/`) |
@@ -26,6 +27,22 @@ Fluxo: `firmware (ESP32) → MQTT → collector → SQLite → dashboard (web) /
   pio device monitor         # monitor serial (115200)
   ```
 - **A melhorar:** SSID/senha do WiFi estão hardcoded em `firmware/src/main.cpp` — deveriam sair para config.
+
+## firmware-core2/
+
+Projeto PlatformIO **separado** (board `m5stack-core2`). O Core2 **não lê sensor** — é um **relógio NTP de cabeceira com tela inteligente** que assina a telemetria dos nós de ar existentes e a exibe. Surgiu porque o Core2 só expõe **5V** nas portas externas (Grove/M-Bus coberto) e o GPIO do ESP32 não é 5V-tolerant, inviabilizando ligar o SCD41 cru nele — então virou consumidor, não produtor.
+
+- **Relógio:** RTC **BM8563** guarda a hora em **UTC**; NTP ressincroniza a cada 60 min. O TZ (`<-03>3`, America/São_Paulo) é setado **no boot**, então o display já nasce em hora local. Na 1ª sync, **zera o relógio antes** do `configTzTime` pra forçar o `getLocalTime` a esperar o pacote NTP real (senão ele retorna o valor velho do RTC na hora e a hora "salta"). M5Unified lê o RTC como UTC — gravar local quebra o fuso.
+- **Dados:** assina `teras/iotnode/+/telemetry/#` (mesmo wildcard do collector/menubar) e mostra CO₂/temp/umidade ao vivo (`--` se a fonte ficar muda >30 s). `TARGET_DEVICE` (vazio = qualquer nó) trava num device específico. Não publica telemetria → não aparece no dashboard.
+- **Tela (layout "Nightstand"):** relógio `HH:MM:SS` (Font7) + data + 3 chips (valor em cima, ícone vetorial embaixo); topo com MQTT + WiFi + bateria (raio ao carregar). Faixas de CO₂: verde <1000 / amarelo 1000–1500 / vermelho >1500.
+- **Fita RGB** (M5GO Battery Bottom2, 10× SK6812 no **GPIO25**, alimentada pelo **5V do bus** → precisa de `M5.Power.setExtOutput(true)`): **breathing** lento (5 s, 5–100%) na cor da faixa do CO₂. Acompanha a tela (apaga junto — uso de cabeceira). Brilho escalado por frame (não `setBrightness`, que dá banding no Adafruit_NeoPixel).
+- **Interação:** tap na tela liga/desliga; **movimento** (IMU MPU6886) acende por 7 s e auto-apaga (`MOTION_THRESH`). LED de carga do PMU desligado (`setLed(0)`).
+- Deps extras: `M5Unified`, `PubSubClient`, `Adafruit NeoPixel`. Porta serial (CH9102) ≠ a do C3 (CP2102) — conferir `pio device list`.
+- Build/flash:
+  ```bash
+  cd firmware-core2
+  pio run --target upload
+  ```
 
 ## dashboard/
 
