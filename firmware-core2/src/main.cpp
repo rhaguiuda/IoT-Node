@@ -38,6 +38,8 @@
 #define LED_PIN         25
 #define LED_COUNT       10
 #define LED_BRIGHTNESS  30        // brilho baixo (cabeceira)
+#define BREATH_PERIOD_MS 5000     // ciclo do "breathing" (5s)
+#define BREATH_MIN       0.05f    // brilho minimo do ciclo (5%)
 
 // --- Paleta (565) ---
 #define C_TEXT    canvas.color565(233,238,243)
@@ -97,10 +99,15 @@ void updateLeds() {
         return;
     }
     int ppm = (int)co2Val;
-    uint32_t c = (ppm < 1000)  ? strip.Color(0, 255, 0)      // verde puro
-               : (ppm <= 1500) ? strip.Color(255, 170, 0)    // amarelo (faixa de atencao)
-                               : strip.Color(255, 0, 0);      // vermelho puro
-    strip.fill(c);
+    uint8_t r, g, b;
+    if      (ppm < 1000)  { r = 0;   g = 255; b = 0; }   // verde
+    else if (ppm <= 1500) { r = 255; g = 170; b = 0; }   // amarelo
+    else                  { r = 255; g = 0;   b = 0; }   // vermelho
+    // breathing: brilho oscila BREATH_MIN..1.0 num cosseno; escala a cor (nao usa
+    // setBrightness repetido p/ evitar banding do Adafruit_NeoPixel)
+    float ph = 2.0f * PI * (millis() % BREATH_PERIOD_MS) / (float)BREATH_PERIOD_MS;
+    float f = BREATH_MIN + (1.0f - BREATH_MIN) * (0.5f - 0.5f * cosf(ph));
+    strip.fill(strip.Color((uint8_t)(r * f), (uint8_t)(g * f), (uint8_t)(b * f)));
     strip.show();
 }
 
@@ -322,8 +329,6 @@ void drawUI() {
     drawChip(x2, w, icoDrop,   C_DROP, hbuf, hasHum  ? C_TEXT : C_MUTED);
 
     canvas.pushSprite(0, 0);
-
-    updateLeds();   // mantem a cor do CO2 na fita enquanto a tela esta ligada
 }
 
 void setup() {
@@ -406,6 +411,13 @@ void loop() {
     handleMqtt();
 
     if (wifiConnected && (millis() - lastNtpSync >= NTP_SYNC_MS)) syncNtp();
+
+    // breathing da fita: refresh rapido (~30fps) p/ suavidade, so com a tela ligada
+    static unsigned long lastLed = 0;
+    if (displayOn && millis() - lastLed >= 33) {
+        lastLed = millis();
+        updateLeds();
+    }
 
     if (displayOn && (millis() - lastDraw >= 1000)) {
         lastDraw = millis();
