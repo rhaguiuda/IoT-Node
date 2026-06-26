@@ -16,7 +16,7 @@ Fluxo: `firmware (ESP32) → MQTT → collector → SQLite → dashboard (web) /
 ## firmware/
 
 - **Placa:** ESP32-C3-DevKitM-1 · framework Arduino · sensor Sensirion SCD41 (I2C: SDA=GPIO4, SCL=GPIO6).
-- Filtro de Kalman nos 3 sinais, watchdog 15 s, LED RGB neopixel (GPIO8) — flash vermelho curto (50 ms a cada 5 s).
+- Filtro de Kalman nos 3 sinais, watchdog 15 s, LED RGB neopixel (GPIO8) como **indicador de erro**: pisca vermelho (~1 Hz) **só quando algo está errado** — sensor SCD41 fora do barramento, falhas de I2C, WiFi ou MQTT desconectados. Com tudo OK o LED fica **apagado** (não é mais heartbeat de atividade).
 - **Identidade do device:** derivada do MAC do WiFi (`esp_read_mac`), em hex minúsculo de 12 chars (ex.: `e8069066185c`). Esse id é o slot de device nos tópicos, e também o client id do MQTT (`iotnode-<mac>`) e o hostname (`AirQualityNode-<mac>`). O client id único **é o que evita a colisão** entre nodes no broker — dois devices com o mesmo client id se derrubam mutuamente.
 - Build/flash:
   ```bash

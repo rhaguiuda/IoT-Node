@@ -30,8 +30,8 @@
 #define MQTT_RETRY_INTERVAL_MS    5000
 #define SENSOR_READ_INTERVAL_MS   5000   // SCD41 updates every ~5s, no point polling faster
 #define WIFI_STATUS_INTERVAL_MS   10000
-#define LED_FLASH_ON_MS           50     // duracao do flash do LED (aceso)
-#define LED_FLASH_PERIOD_MS       5000   // intervalo entre flashes (flash-a-flash)
+#define LED_ERROR_ON_MS           150    // duracao do flash de erro (aceso)
+#define LED_ERROR_PERIOD_MS       1000   // periodo do pisca de erro (~1 Hz, visivel)
 #define UPTIME_SAVE_INTERVAL_MS   60000
 #define WDT_TIMEOUT_S             15     // Tighter watchdog (was 30s)
 #define I2C_TIMEOUT_MS            1000   // I2C transaction timeout
@@ -79,17 +79,37 @@ uint8_t i2cFailCount = 0;
 const char* lastResetReason = "UNKNOWN";
 #define I2C_FAIL_THRESHOLD 5   // Faster recovery (was 10)
 
+// Saudavel = tudo que precisa funcionar esta funcionando:
+// sensor inicializado, sem falhas de I2C em andamento, WiFi e MQTT conectados.
+// Se qualquer um falhar, o node nao esta cumprindo a funcao -> sinaliza erro.
+bool systemHealthy() {
+    return scd41_ok
+        && i2cFailCount == 0
+        && WiFi.status() == WL_CONNECTED
+        && client.connected();
+}
+
 void handleLed(unsigned long now) {
-    // WS2812 RGB LED: flash vermelho curto (100ms) a cada 2s.
-    // Aceso por LED_FLASH_ON_MS, apagado pelo resto do periodo.
+    // WS2812 RGB LED como indicador de ERRO, nao de atividade:
+    // - tudo OK  -> LED apagado, nao pisca.
+    // - algo errado (sensor fora do barramento, WiFi ou MQTT caidos)
+    //   -> pisca vermelho ~1 Hz (LED_ERROR_ON_MS aceso por periodo).
+    if (systemHealthy()) {
+        if (ledState) {
+            ledState = false;
+            neopixelWrite(LED_RGB_PIN, 0, 0, 0);
+        }
+        return;
+    }
+
     if (ledState) {
-        if (now - lastLedToggle >= LED_FLASH_ON_MS) {
+        if (now - lastLedToggle >= LED_ERROR_ON_MS) {
             lastLedToggle = now;
             ledState = false;
             neopixelWrite(LED_RGB_PIN, 0, 0, 0);
         }
     } else {
-        if (now - lastLedToggle >= LED_FLASH_PERIOD_MS - LED_FLASH_ON_MS) {
+        if (now - lastLedToggle >= LED_ERROR_PERIOD_MS - LED_ERROR_ON_MS) {
             lastLedToggle = now;
             ledState = true;
             neopixelWrite(LED_RGB_PIN, 30, 0, 0); // dim red (R=30, G=0, B=0)
