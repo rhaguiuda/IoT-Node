@@ -107,7 +107,6 @@ export default function Header({
               )}
             </div>
           )}
-          <DeviceSelector devices={devices} value={selectedDevice} onChange={onDeviceChange} />
           <StatusBadge
             level={sensorAlive ? "success" : "danger"}
             label={sensorAlive ? "Sensor Online" : "Sensor Offline"}
@@ -117,7 +116,10 @@ export default function Header({
             label={connected ? "Broker" : "Broker Offline"}
           />
         </div>
-        <ThemePicker />
+        <div className="flex items-center gap-2">
+          <ThemePicker />
+          <DeviceSelector devices={devices} value={selectedDevice} onChange={onDeviceChange} />
+        </div>
       </div>
       {/* Bottom row: range selector full width */}
       <RangeSelector value={range} onChange={onRangeChange} />

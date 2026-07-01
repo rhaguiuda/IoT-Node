@@ -195,7 +195,12 @@ const SimpleChart = memo(function SimpleChart({
       </div>
       <div ref={chartWrapperRef} style={{ touchAction: "pan-y" }}>
         <ResponsiveContainer width="100%" height={height}>
-          <AreaChart data={displayData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+          <AreaChart
+            data={displayData}
+            margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+            syncId="metric-charts"
+            syncMethod="value"
+          >
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={color} stopOpacity={0.3} />
@@ -238,7 +243,9 @@ const SimpleChart = memo(function SimpleChart({
               fill={`url(#${gradientId})`}
               dot={false}
               connectNulls={false}
-              isAnimationActive={false}
+              isAnimationActive
+              animationDuration={350}
+              animationEasing="ease-out"
             />
           </AreaChart>
         </ResponsiveContainer>
