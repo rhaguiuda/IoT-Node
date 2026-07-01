@@ -58,10 +58,12 @@ Projeto PlatformIO **separado** (board `m5stack-core2`). O Core2 **não lê sens
 - **Docker:** `docker-compose.yml` sobe dois serviços com a mesma imagem — `iot-air-quality-web` (Next.js, porta **3100**) e `iot-air-quality-collector` (subscriber MQTT). Imagem `node:22-alpine`, multi-stage.
 - **Dados:** SQLite em `data/iotnode.db` (volume `./data:/app/data`, persiste entre deploys). Retenção 90 dias com purga automática.
 - **Tópicos:** `teras/iotnode/<device_id>/telemetry/{co2,temp,umi}`, onde `<device_id>` é o MAC do device. O collector assina o wildcard `teras/iotnode/+/telemetry/#`.
-- **Schema:** `readings(id, device_id, measurement, value, timestamp)` + `devices(device_id, name, first_seen, last_seen)` + `settings(key, value)`. Um device é auto-registrado em `devices` no primeiro contato (nome = o próprio id; editável no Settings, e o upsert do collector **nunca sobrescreve** o nome). Índice principal: `(device_id, measurement, timestamp)`.
+- **Schema:** `readings(id, device_id, measurement, value, timestamp)` + `devices(device_id, name, first_seen, last_seen)` + `settings(key, value)`. Um device é auto-registrado em `devices` no primeiro contato (nome = o próprio id, o que conta como "sem nome"; renomeável pelo lápis no Header ou no Settings, e o upsert do collector **nunca sobrescreve** o nome). Índice principal: `(device_id, measurement, timestamp)`.
 - **Migração:** `collector/db.ts` roda uma migração idempotente no boot — adiciona `device_id` a DBs antigos e faz backfill das linhas legadas com `'1'` (o id hardcoded do firmware antigo). Histórico do device legado `'1'` foi posteriormente reatribuído ao MAC real do aparelho.
 - **Env:** `MQTT_URL` (default `mqtt://192.168.100.224:1883`), `DB_PATH` (default `/app/data/iotnode.db`).
-- **Multi-device no front:** seletor de device no Header — escondido com 1 device (mostra só o nome), combo box com 2+. Seleção persistida em `localStorage`. API: `device` obrigatório em `/api/telemetry` e `/api/trend`; `/api/devices` lista (GET) e renomeia (PATCH).
+- **Nome de exibição do device (`deviceLabel` em `lib/types.ts`):** device **com nome custom → mostra só o nome**; **sem nome → mostra o MAC**. "Sem nome" = `name` vazio ou igual ao `device_id` (o default gravado pelo collector). Usar `deviceLabel()` em todo lugar que exibe device — nunca concatenar MAC+nome.
+- **Multi-device no front:** o **título do Header** mostra o `deviceLabel` do device selecionado + um **lápis** que renomeia **inline** (Enter salva, Esc cancela, blur salva; campo vazio → reseta pro MAC). O **seletor** (dropdown) só aparece com **2+ devices** (com 1, o título já basta). Seleção persistida em `localStorage`. Também dá pra renomear no Settings (mesma API).
+- **API devices:** `/api/devices` lista (GET) e renomeia (PATCH `{device_id, name}`). **Nome vazio no PATCH reseta pro `device_id`** (volta a "sem nome" → exibe MAC). `device` é obrigatório em `/api/telemetry` e `/api/trend`.
 
 ## menubar/
 

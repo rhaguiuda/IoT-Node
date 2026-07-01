@@ -1,6 +1,7 @@
 "use client";
 
 import type { Device } from "@/lib/types";
+import { deviceLabel } from "@/lib/types";
 import MaterialIcon from "@/components/MaterialIcon";
 
 interface DeviceSelectorProps {
@@ -10,25 +11,9 @@ interface DeviceSelectorProps {
 }
 
 export default function DeviceSelector({ devices, value, onChange }: DeviceSelectorProps) {
-  // Nothing to show before any device has reported.
-  if (devices.length === 0) return null;
-
-  const selected = devices.find((d) => d.device_id === value) ?? devices[0];
-
-  // Single device: show its name as a static label (no dropdown to pick from).
-  if (devices.length === 1) {
-    return (
-      <div
-        className="inline-flex items-center gap-1.5 rounded-lg pl-2.5 pr-3 py-1.5"
-        style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)" }}
-      >
-        <MaterialIcon name="sensors" size={16} color="var(--text-tertiary)" />
-        <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-          {selected.name}
-        </span>
-      </div>
-    );
-  }
+  // Only a switcher: the selected device's name is shown in the header title.
+  // With 0 or 1 device there is nothing to switch between.
+  if (devices.length <= 1) return null;
 
   return (
     <div
@@ -46,7 +31,7 @@ export default function DeviceSelector({ devices, value, onChange }: DeviceSelec
       >
         {devices.map((d) => (
           <option key={d.device_id} value={d.device_id} style={{ color: "#000" }}>
-            {d.name}
+            {deviceLabel(d)}
           </option>
         ))}
       </select>

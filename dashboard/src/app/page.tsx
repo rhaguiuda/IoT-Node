@@ -287,6 +287,20 @@ export default function Home() {
     try { localStorage.setItem(SELECTED_DEVICE_KEY, deviceId); } catch {}
   }, []);
 
+  // Rename a device from the header pencil. Empty name resets it to the MAC
+  // (back to "unnamed"). Optimistic update, then refetch to confirm.
+  const handleRename = useCallback(async (deviceId: string, name: string) => {
+    setDevices((prev) => prev.map((d) => (d.device_id === deviceId ? { ...d, name: name || deviceId } : d)));
+    try {
+      await fetch("/api/devices", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ device_id: deviceId, name }),
+      });
+    } catch {}
+    fetchDevices();
+  }, [fetchDevices]);
+
   // Fetch trends from API
   const fetchTrends = useCallback(async () => {
     if (!selectedDevice) return;
@@ -338,6 +352,7 @@ export default function Home() {
         devices={devices}
         selectedDevice={selectedDevice}
         onDeviceChange={handleDeviceChange}
+        onRename={handleRename}
       />
       <KpiGrid values={values} trends={trends} />
       <div className="space-y-4">

@@ -196,7 +196,9 @@ The collector persists every MQTT message to SQLite as it arrives (~3 inserts ev
 
 **Retention:** 90 days. The collector purges older records on startup and every 24 hours.
 
-**Schema (multi-device):** `readings(id, device_id, measurement, value, timestamp)` keyed by `device_id` (the WiFi MAC), plus `devices(device_id, name, first_seen, last_seen)` and `settings(key, value)`. Devices are auto-registered on first contact (name defaults to the id, editable in the dashboard Settings; the collector's upsert never overwrites the name). A device id is parsed from the topic on each message. On boot the collector runs an idempotent migration that adds `device_id` to legacy DBs and backfills old rows with `'1'`.
+**Schema (multi-device):** `readings(id, device_id, measurement, value, timestamp)` keyed by `device_id` (the WiFi MAC), plus `devices(device_id, name, first_seen, last_seen)` and `settings(key, value)`. Devices are auto-registered on first contact (name defaults to the id — which counts as "unnamed"; the collector's upsert never overwrites the name). A device id is parsed from the topic on each message. On boot the collector runs an idempotent migration that adds `device_id` to legacy DBs and backfills old rows with `'1'`.
+
+**Device display name:** a device with a custom name shows **only the name**; an unnamed device (name empty or equal to its `device_id`) shows the **MAC**. This rule lives in `deviceLabel()` (`src/lib/types.ts`) and is used everywhere a device is shown. Rename it from the **pencil next to the title** on the main page (inline — Enter saves, Esc cancels, blur saves) or in Settings. `PATCH /api/devices` takes `{ device_id, name }`; an **empty name resets the device to its MAC** (unnamed again). The device switcher (dropdown) only appears with 2+ devices — with a single device the title already shows its name.
 
 ### Dashboard Downsampling
 

@@ -9,9 +9,11 @@ export async function PATCH(request: NextRequest) {
   const body = await request.json();
   const deviceId = typeof body?.device_id === "string" ? body.device_id.trim() : "";
   const name = typeof body?.name === "string" ? body.name.trim() : "";
-  if (!deviceId || !name) {
-    return NextResponse.json({ error: "device_id and name are required" }, { status: 400 });
+  if (!deviceId) {
+    return NextResponse.json({ error: "device_id is required" }, { status: 400 });
   }
-  updateDeviceName(deviceId, name);
+  // Empty name resets the device to "unnamed" (name = device_id), so the UI
+  // shows the MAC again instead of a custom name.
+  updateDeviceName(deviceId, name || deviceId);
   return NextResponse.json({ ok: true });
 }
