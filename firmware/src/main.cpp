@@ -79,14 +79,30 @@ uint8_t i2cFailCount = 0;
 const char* lastResetReason = "UNKNOWN";
 #define I2C_FAIL_THRESHOLD 5   // Faster recovery (was 10)
 
+// Janela de tolerancia pos-boot: WiFi + MQTT levam alguns segundos pra
+// associar/conectar normalmente, e isso NAO e erro. So vira erro se essa
+// janela estourar sem sucesso, ou se ja tinha conectado uma vez e caiu depois.
+#define BOOT_GRACE_MS 20000
+bool hasConnectedOnce = false;
+
 // Saudavel = tudo que precisa funcionar esta funcionando:
 // sensor inicializado, sem falhas de I2C em andamento, WiFi e MQTT conectados.
-// Se qualquer um falhar, o node nao esta cumprindo a funcao -> sinaliza erro.
+// Falha de sensor e falha "dura" de WiFi (rede nao encontrada / senha errada)
+// sinalizam erro imediatamente, mesmo durante o boot. Mas so estar no meio do
+// processo normal de conexao (WiFi associando, MQTT fazendo handshake) nao
+// conta como erro dentro da janela de boot — sinaliza erro so se estourar o
+// prazo ou se a conexao caiu depois de ja ter funcionado.
 bool systemHealthy() {
-    return scd41_ok
-        && i2cFailCount == 0
-        && WiFi.status() == WL_CONNECTED
-        && client.connected();
+    if (!scd41_ok || i2cFailCount > 0) return false;
+
+    if (WiFi.status() == WL_CONNECTED && client.connected()) {
+        hasConnectedOnce = true;
+        return true;
+    }
+
+    if (WiFi.status() == WL_NO_SSID_AVAIL || WiFi.status() == WL_CONNECT_FAILED) return false;
+
+    return !hasConnectedOnce && millis() < BOOT_GRACE_MS;
 }
 
 void handleLed(unsigned long now) {
