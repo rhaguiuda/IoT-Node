@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, memo, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback, useMemo, memo, useRef } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -23,9 +23,12 @@ interface SimpleChartProps {
   unit: string;
   color: string;
   rangeSeconds: number;
-  height?: number;
   decimals?: number;
   thresholdValue?: number;
+  // True once measured available space comfortably fits all 3 charts without
+  // scrolling (see the measurement in Home()) — false falls back to the
+  // normal fixed-height stacked layout.
+  fitMode?: boolean;
 }
 
 // Minimum span (seconds) that zoom can reach — prevents collapsing the domain
@@ -34,7 +37,7 @@ const ZOOM_IN_FACTOR = 0.8;
 const ZOOM_OUT_FACTOR = 1.25;
 
 const SimpleChart = memo(function SimpleChart({
-  data, title, unit, color, rangeSeconds, height = 280, decimals = 0, thresholdValue,
+  data, title, unit, color, rangeSeconds, decimals = 0, thresholdValue, fitMode = false,
 }: SimpleChartProps) {
   const tickFormatter = createTickFormatter(rangeSeconds);
   const gradientId = `grad-${title.replace(/\s/g, "")}`;
@@ -134,8 +137,8 @@ const SimpleChart = memo(function SimpleChart({
   const effectiveTickFormatter = zoomDomain ? createTickFormatter(domainSpan) : tickFormatter;
 
   return (
-    <div className="card p-4">
-      <div className="flex items-start justify-between mb-4 gap-3">
+    <div className={`card p-4 ${fitMode ? "flex flex-1 min-h-[180px] flex-col" : ""}`}>
+      <div className={`flex items-start justify-between mb-4 gap-3 ${fitMode ? "shrink-0" : ""}`}>
         <div className="flex flex-col min-w-0">
           <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{title}</span>
           {stats && (
@@ -193,8 +196,12 @@ const SimpleChart = memo(function SimpleChart({
           <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>{unit}</span>
         </div>
       </div>
-      <div ref={chartWrapperRef} style={{ touchAction: "pan-y" }}>
-        <ResponsiveContainer width="100%" height={height}>
+      <div
+        ref={chartWrapperRef}
+        style={{ touchAction: "pan-y" }}
+        className={fitMode ? "h-auto flex-1 min-h-0" : "h-[280px]"}
+      >
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={displayData}
             margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
@@ -264,6 +271,30 @@ export default function Home() {
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const { values, connected, lastMessage } = useMqtt(selectedDevice);
   const [trends, setTrends] = useState<Record<string, TrendResult>>({});
+
+  // Whether the 3 charts comfortably fit below the header/KPIs without
+  // scrolling. Measured from the real, rendered layout instead of a guessed
+  // viewport-height breakpoint — a fixed breakpoint can't account for browser
+  // chrome (bookmarks bar, zoom, devtools), so it kept firing on windows that
+  // were technically tall enough on paper but not in practice.
+  const chartsRef = useRef<HTMLDivElement>(null);
+  const [fitMode, setFitMode] = useState(false);
+  useLayoutEffect(() => {
+    const MIN_CHART_HEIGHT = 200; // px — below this a fixed 280px stack reads better than a cramped fit
+    const CHART_GAP = 12; // matches gap-3 between the 3 charts
+    const BOTTOM_PADDING = 24; // matches main's py-6 bottom half
+    function recompute() {
+      const el = chartsRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      const available = window.innerHeight - top - BOTTOM_PADDING;
+      const perChart = (available - CHART_GAP * 2) / 3;
+      setFitMode(perChart >= MIN_CHART_HEIGHT);
+    }
+    recompute();
+    window.addEventListener("resize", recompute);
+    return () => window.removeEventListener("resize", recompute);
+  }, [devices.length]); // header height can change with device count (selector appears at 2+)
 
   // Fetch the device list on mount and every 30s (picks up newly seen nodes).
   // The selected device comes from localStorage when still present, else the
@@ -351,29 +382,37 @@ export default function Home() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-      <Header
-        connected={connected}
-        lastMessage={lastMessage}
-        range={range}
-        onRangeChange={setRange}
-        devices={devices}
-        selectedDevice={selectedDevice}
-        onDeviceChange={handleDeviceChange}
-        onRename={handleRename}
-      />
-      <KpiGrid values={values} trends={trends} />
-      <div className="space-y-4">
-        {loading && !historical ? (
-          <div className="card p-8 text-center">
-            <p style={{ color: "var(--text-tertiary)" }}>Carregando dados...</p>
-          </div>
-        ) : (
-          <>
-            <SimpleChart data={co2Data} title="CO₂" unit="ppm" color="var(--accent)" rangeSeconds={rangeConfig.seconds} />
-            <SimpleChart data={tempData} title="Temperatura" unit="°C" color="var(--warning)" rangeSeconds={rangeConfig.seconds} decimals={1} />
-            <SimpleChart data={umiData} title="Umidade" unit="%" color="var(--info)" rangeSeconds={rangeConfig.seconds} decimals={1} />
-          </>
-        )}
+      {/* Header + KPIs + charts fit the viewport when there's measured room
+          (see fitMode above) so all 3 can be compared without scrolling.
+          Otherwise this is a plain stack, unchanged. */}
+      <div className={`space-y-6 ${fitMode ? "flex flex-col gap-4 h-[calc(100dvh-3rem)]" : ""}`}>
+        <Header
+          connected={connected}
+          lastMessage={lastMessage}
+          range={range}
+          onRangeChange={setRange}
+          devices={devices}
+          selectedDevice={selectedDevice}
+          onDeviceChange={handleDeviceChange}
+          onRename={handleRename}
+        />
+        <KpiGrid values={values} trends={trends} />
+        <div
+          ref={chartsRef}
+          className={`space-y-4 ${fitMode ? "flex flex-1 min-h-0 flex-col gap-3 overflow-y-auto overflow-x-hidden" : ""}`}
+        >
+          {loading && !historical ? (
+            <div className="card p-8 text-center">
+              <p style={{ color: "var(--text-tertiary)" }}>Carregando dados...</p>
+            </div>
+          ) : (
+            <>
+              <SimpleChart data={co2Data} title="CO₂" unit="ppm" color="var(--accent)" rangeSeconds={rangeConfig.seconds} fitMode={fitMode} />
+              <SimpleChart data={tempData} title="Temperatura" unit="°C" color="var(--warning)" rangeSeconds={rangeConfig.seconds} decimals={1} fitMode={fitMode} />
+              <SimpleChart data={umiData} title="Umidade" unit="%" color="var(--info)" rangeSeconds={rangeConfig.seconds} decimals={1} fitMode={fitMode} />
+            </>
+          )}
+        </div>
       </div>
       <SettingsPanel />
     </main>

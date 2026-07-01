@@ -420,6 +420,12 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s;
+  /* Recharts' tooltip wrapper isn't clamped to the viewport and can overflow
+     horizontally by a few px near a chart's edge. Harmless on its own, but
+     with chart height now tied to 100dvh (see page.tsx), the scrollbar this
+     briefly creates changes dvh and cascades into a visible resize of every
+     chart. Blocking it here kills the trigger outright. */
+  overflow-x: hidden;
 }
 
 h1, h2, h3 {
