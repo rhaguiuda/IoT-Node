@@ -36,34 +36,51 @@ struct MenuBarLabel: View {
         let full = "\(co2Text)  \(tempText)  \(umiText)"
 
         let font = NSFont.menuBarFont(ofSize: 0)
-        let defaultColor = NSColor.labelColor
+
+        // CO2 warning color (nil = normal state, no warning).
+        let warningColor = co2.flatMap { co2WarningColor($0) }
+        let isWarning = warningColor != nil
+
+        // Hybrid contrast strategy:
+        // - Normal state: draw opaque black and mark the image as a TEMPLATE.
+        //   macOS uses only the alpha mask and recolors it with the correct
+        //   adaptive menu bar text color, so it stays readable on any bar
+        //   (light/dark/translucent-over-wallpaper/blue highlight) for free.
+        // - Warning state: the image must stay non-template to keep the red/
+        //   orange CO2 color, so resolve labelColor against the effective
+        //   appearance and draw the CO2 part in the warning color. Red/orange
+        //   read well on both light and dark bars, unlike plain white.
+        let baseColor: NSColor = isWarning ? NSColor.labelColor : NSColor.black
 
         let attributed = NSMutableAttributedString(string: full, attributes: [
             .font: font,
-            .foregroundColor: defaultColor,
+            .foregroundColor: baseColor,
         ])
 
-        // Color just the CO2 part
-        if let co2 = co2 {
-            let color = co2Color(co2)
-            if color != defaultColor {
-                let co2Range = (full as NSString).range(of: co2Text)
-                attributed.addAttribute(.foregroundColor, value: color, range: co2Range)
-            }
+        if let warningColor {
+            let co2Range = (full as NSString).range(of: co2Text)
+            attributed.addAttribute(.foregroundColor, value: warningColor, range: co2Range)
         }
 
         let size = attributed.size()
         let image = NSImage(size: NSSize(width: ceil(size.width), height: ceil(size.height)))
         image.lockFocus()
-        attributed.draw(at: NSPoint(x: 0, y: 0))
+        if isWarning {
+            // Resolve dynamic colors (labelColor) against the app appearance.
+            NSApp.effectiveAppearance.performAsCurrentDrawingAppearance {
+                attributed.draw(at: NSPoint(x: 0, y: 0))
+            }
+        } else {
+            attributed.draw(at: NSPoint(x: 0, y: 0))
+        }
         image.unlockFocus()
-        image.isTemplate = false
+        image.isTemplate = !isWarning
         return image
     }
 
-    private func co2Color(_ value: Double) -> NSColor {
+    private func co2WarningColor(_ value: Double) -> NSColor? {
         if value >= 1500 { return NSColor.systemRed }
         if value >= 1000 { return NSColor.systemOrange }
-        return NSColor.labelColor
+        return nil
     }
 }
