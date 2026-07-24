@@ -283,9 +283,18 @@ export default function Home() {
     const MIN_CHART_HEIGHT = 200; // px — below this a fixed 280px stack reads better than a cramped fit
     const CHART_GAP = 12; // matches gap-3 between the 3 charts
     const BOTTOM_PADDING = 24; // matches main's py-6 bottom half
+    const MIN_FIT_WIDTH = 768; // md breakpoint — fit mode is a desktop affordance only
     function recompute() {
       const el = chartsRef.current;
       if (!el) return;
+      // Fit-to-viewport is for wide screens. On phones the browser chrome
+      // (URL bar showing/hiding on scroll) constantly changes innerHeight,
+      // which made fit mode flip on/off mid-scroll and the charts jump. Below
+      // the md breakpoint always use the plain scrollable stack.
+      if (window.innerWidth < MIN_FIT_WIDTH) {
+        setFitMode(false);
+        return;
+      }
       const top = el.getBoundingClientRect().top;
       const available = window.innerHeight - top - BOTTOM_PADDING;
       const perChart = (available - CHART_GAP * 2) / 3;

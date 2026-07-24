@@ -74,8 +74,8 @@ export default function Header({
   return (
     <header className="space-y-3 px-4 py-3">
       {/* Top row: title + badges + theme picker */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 min-w-0">
           {editing && selected ? (
             <input
               ref={inputRef}
@@ -116,7 +116,7 @@ export default function Header({
             label={connected ? "Broker" : "Broker Offline"}
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <ThemePicker />
           <DeviceSelector devices={devices} value={selectedDevice} onChange={onDeviceChange} />
         </div>
